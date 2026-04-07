@@ -19,10 +19,7 @@ const Header = () => {
       <div className="container mx-auto flex items-center justify-between px-6 py-4">
         <Link to="/" className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg" style={{ background: "var(--gradient-primary)" }} />
-          <span className="text-lg font-bold tracking-tight">
-            <span className="gradient-text">AdobeMeta</span>{" "}
-            <span className="text-foreground">AI Pro</span>
-          </span>
+          <span className="text-lg font-bold tracking-tight gradient-text">eliteiq.tech</span>
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">

@@ -38,7 +38,7 @@ const DownloadPage = () => (
   <div className="py-20">
     <div className="container mx-auto px-6">
       <div className="mb-16 text-center animate-slide-up">
-        <h1 className="mb-3 text-4xl font-bold">Download <span className="gradient-text">AdobeMeta AI Pro</span></h1>
+        <h1 className="mb-3 text-4xl font-bold">Download <span className="gradient-text">eliteiq.tech</span></h1>
         <p className="text-lg text-muted-foreground">Windows 10/11 — Free Trial Included</p>
       </div>
 

@@ -39,7 +39,7 @@ const HomePage = () => (
               <Sparkles className="h-3.5 w-3.5 text-primary" /> v1.1.3 — Now with 9 platforms
             </div>
             <h1 className="mb-6 text-4xl font-bold leading-tight tracking-tight lg:text-6xl">
-              <span className="gradient-text">AdobeMeta AI Pro</span>
+              <span className="gradient-text">eliteiq.tech</span>
               <br />
               <span className="text-foreground">Multi-Platform Metadata Generator</span>
             </h1>
@@ -65,7 +65,7 @@ const HomePage = () => (
           <div className="animate-fade-in">
             <div className="relative">
               <div className="absolute -inset-4 rounded-3xl opacity-30 blur-2xl" style={{ background: "var(--gradient-primary)" }} />
-              <img src={heroImg} alt="AdobeMeta AI Pro Dashboard" className="relative rounded-2xl border border-glass-border shadow-2xl" width={1280} height={800} />
+              <img src={heroImg} alt="eliteiq.tech Dashboard" className="relative rounded-2xl border border-glass-border shadow-2xl" width={1280} height={800} />
             </div>
           </div>
         </div>
