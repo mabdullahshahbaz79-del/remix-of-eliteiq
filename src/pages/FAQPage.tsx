@@ -52,7 +52,7 @@ const FAQPage = () => (
     <div className="container mx-auto px-6">
       <div className="mb-16 text-center animate-slide-up">
         <h1 className="mb-3 text-4xl font-bold">Frequently Asked Questions</h1>
-        <p className="text-lg text-muted-foreground">Everything you need to know about AdobeMeta AI Pro</p>
+        <p className="text-lg text-muted-foreground">Everything you need to know about eliteiq.tech</p>
       </div>
 
       <div className="mx-auto max-w-3xl space-y-8">

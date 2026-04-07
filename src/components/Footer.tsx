@@ -7,7 +7,7 @@ const Footer = () => (
         <div>
           <div className="flex items-center gap-2 mb-4">
             <div className="h-7 w-7 rounded-lg" style={{ background: "var(--gradient-primary)" }} />
-            <span className="font-bold gradient-text">AdobeMeta AI Pro</span>
+            <span className="font-bold gradient-text">eliteiq.tech</span>
           </div>
           <p className="text-sm text-muted-foreground">AI-powered multi-platform stock metadata generator for professionals.</p>
         </div>
@@ -39,7 +39,7 @@ const Footer = () => (
       </div>
 
       <div className="mt-10 border-t border-glass-border pt-6 text-center text-sm text-muted-foreground">
-        © 2026 AdobeMeta AI Pro · All rights reserved
+        © 2026 eliteiq.tech · All rights reserved
       </div>
     </div>
   </footer>
