@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Sparkles, Layers, Zap, BarChart3, Upload, Brain, Edit3, CheckCircle, ArrowRight, ArrowDown } from "lucide-react";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
+import FloatingOrbs from "@/components/FloatingOrbs";
 import heroImg from "@/assets/hero-dashboard.jpg";
 
 const platforms = [
