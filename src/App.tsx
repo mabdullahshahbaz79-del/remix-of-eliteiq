@@ -28,8 +28,8 @@ const App = () => (
             <Route path="/download" element={<DownloadPage />} />
             <Route path="/faq" element={<FAQPage />} />
             <Route path="/contact" element={<ContactPage />} />
-            <Route path="/admin" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/abdullah-admin" element={<AdminLogin />} />
+            <Route path="/abdullah-admin/dashboard" element={<AdminDashboard />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
