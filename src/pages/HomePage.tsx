@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Sparkles, Layers, Zap, BarChart3, Upload, Brain, Edit3, CheckCircle, ArrowRight, ArrowDown } from "lucide-react";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
+import FloatingOrbs from "@/components/FloatingOrbs";
 import heroImg from "@/assets/hero-dashboard.jpg";
 
 const platforms = [
@@ -25,6 +26,7 @@ const HomePage = () => (
   <div>
     {/* Hero */}
     <section className="relative min-h-screen flex items-center overflow-hidden">
+      <FloatingOrbs />
       {/* Subtle ambient glow */}
       <div className="absolute inset-0 opacity-20" style={{ background: "radial-gradient(ellipse at 30% 40%, hsl(255 60% 64% / 0.25), transparent 60%), radial-gradient(ellipse at 80% 60%, hsl(174 100% 40% / 0.15), transparent 50%)" }} />
 
