@@ -17,27 +17,63 @@ export type Database = {
       activity_logs: {
         Row: {
           action: string
+          action_type: string | null
+          admin_email: string | null
           created_at: string
           details: Json | null
           id: string
           ip_address: string | null
+          status: string | null
+          target_email: string | null
+          target_license: string | null
           user_id: string | null
         }
         Insert: {
           action: string
+          action_type?: string | null
+          admin_email?: string | null
           created_at?: string
           details?: Json | null
           id?: string
           ip_address?: string | null
+          status?: string | null
+          target_email?: string | null
+          target_license?: string | null
           user_id?: string | null
         }
         Update: {
           action?: string
+          action_type?: string | null
+          admin_email?: string | null
           created_at?: string
           details?: Json | null
           id?: string
           ip_address?: string | null
+          status?: string | null
+          target_email?: string | null
+          target_license?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      admin_settings: {
+        Row: {
+          id: string
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          id?: string
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: Json
         }
         Relationships: []
       }
@@ -46,68 +82,167 @@ export type Database = {
           activated_at: string | null
           created_at: string
           current_activations: number
+          duration: string | null
           expires_at: string | null
+          generated_by_admin: string | null
           id: string
           license_key: string
           max_activations: number
           plan: string
+          price_pkr: number | null
           status: string
           updated_at: string
+          used_by_email: string | null
           user_id: string | null
         }
         Insert: {
           activated_at?: string | null
           created_at?: string
           current_activations?: number
+          duration?: string | null
           expires_at?: string | null
+          generated_by_admin?: string | null
           id?: string
           license_key: string
           max_activations?: number
           plan?: string
+          price_pkr?: number | null
           status?: string
           updated_at?: string
+          used_by_email?: string | null
           user_id?: string | null
         }
         Update: {
           activated_at?: string | null
           created_at?: string
           current_activations?: number
+          duration?: string | null
           expires_at?: string | null
+          generated_by_admin?: string | null
           id?: string
           license_key?: string
           max_activations?: number
           plan?: string
+          price_pkr?: number | null
           status?: string
           updated_at?: string
+          used_by_email?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          button_text: string | null
+          button_url: string | null
+          created_at: string
+          created_by_admin: string | null
+          expires_at: string | null
+          icon_type: string
+          id: string
+          is_active: boolean
+          is_draft: boolean
+          message: string
+          notification_type: string
+          priority: string
+          read_count: number | null
+          recipients_count: number | null
+          repeat_interval: string | null
+          scheduled_at: string | null
+          sent_at: string | null
+          target_type: string
+          target_value: string | null
+          title: string
+        }
+        Insert: {
+          button_text?: string | null
+          button_url?: string | null
+          created_at?: string
+          created_by_admin?: string | null
+          expires_at?: string | null
+          icon_type?: string
+          id?: string
+          is_active?: boolean
+          is_draft?: boolean
+          message: string
+          notification_type?: string
+          priority?: string
+          read_count?: number | null
+          recipients_count?: number | null
+          repeat_interval?: string | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          target_type?: string
+          target_value?: string | null
+          title: string
+        }
+        Update: {
+          button_text?: string | null
+          button_url?: string | null
+          created_at?: string
+          created_by_admin?: string | null
+          expires_at?: string | null
+          icon_type?: string
+          id?: string
+          is_active?: boolean
+          is_draft?: boolean
+          message?: string
+          notification_type?: string
+          priority?: string
+          read_count?: number | null
+          recipients_count?: number | null
+          repeat_interval?: string | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          target_type?: string
+          target_value?: string | null
+          title?: string
         }
         Relationships: []
       }
       profiles: {
         Row: {
+          admin_notes: string | null
           avatar_url: string | null
           created_at: string
+          device_info: string | null
           email: string | null
+          files_processed: number | null
           full_name: string | null
           id: string
+          ip_address: string | null
+          last_activity: string | null
+          status: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          admin_notes?: string | null
           avatar_url?: string | null
           created_at?: string
+          device_info?: string | null
           email?: string | null
+          files_processed?: number | null
           full_name?: string | null
           id?: string
+          ip_address?: string | null
+          last_activity?: string | null
+          status?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          admin_notes?: string | null
           avatar_url?: string | null
           created_at?: string
+          device_info?: string | null
           email?: string | null
+          files_processed?: number | null
           full_name?: string | null
           id?: string
+          ip_address?: string | null
+          last_activity?: string | null
+          status?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -153,6 +288,50 @@ export type Database = {
             columns: ["license_id"]
             isOneToOne: false
             referencedRelation: "licenses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_notifications: {
+        Row: {
+          clicked_at: string | null
+          clicked_button: boolean
+          created_at: string
+          dismissed_at: string | null
+          id: string
+          is_read: boolean
+          notification_id: string
+          read_at: string | null
+          user_id: string
+        }
+        Insert: {
+          clicked_at?: string | null
+          clicked_button?: boolean
+          created_at?: string
+          dismissed_at?: string | null
+          id?: string
+          is_read?: boolean
+          notification_id: string
+          read_at?: string | null
+          user_id: string
+        }
+        Update: {
+          clicked_at?: string | null
+          clicked_button?: boolean
+          created_at?: string
+          dismissed_at?: string | null
+          id?: string
+          is_read?: boolean
+          notification_id?: string
+          read_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_notifications_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
             referencedColumns: ["id"]
           },
         ]
