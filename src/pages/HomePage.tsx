@@ -1,16 +1,9 @@
 import { Link } from "react-router-dom";
-import { Sparkles, Layers, Zap, BarChart3, Upload, Brain, Edit3, CheckCircle, ArrowRight } from "lucide-react";
+import { Sparkles, Layers, Zap, BarChart3, Upload, Brain, Edit3, CheckCircle, ArrowRight, ArrowDown } from "lucide-react";
 import heroImg from "@/assets/hero-dashboard.jpg";
 
 const platforms = [
   "Vecteezy", "123RF", "Freepik", "Pond5", "Depositphotos", "Canva", "iStock", "Shutterstock", "Dreamstime"
-];
-
-const stats = [
-  { value: "9", label: "Supported Platforms", icon: Layers },
-  { value: "50+", label: "Keywords Per Asset", icon: Sparkles },
-  { value: "Bulk", label: "Processing Support", icon: Zap },
-  { value: "100%", label: "Offline Option (Soon)", icon: BarChart3 },
 ];
 
 const features = [
@@ -30,78 +23,101 @@ const steps = [
 const HomePage = () => (
   <div>
     {/* Hero */}
-    <section className="relative overflow-hidden py-20 lg:py-32">
-      <div className="absolute inset-0 opacity-20" style={{ background: "radial-gradient(ellipse at 30% 20%, hsl(255 60% 64% / 0.3), transparent 60%), radial-gradient(ellipse at 70% 80%, hsl(174 100% 40% / 0.2), transparent 60%)" }} />
-      <div className="container relative mx-auto px-6">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
+    <section className="relative min-h-screen flex items-center overflow-hidden">
+      {/* Subtle ambient glow */}
+      <div className="absolute inset-0 opacity-20" style={{ background: "radial-gradient(ellipse at 30% 40%, hsl(255 60% 64% / 0.25), transparent 60%), radial-gradient(ellipse at 80% 60%, hsl(174 100% 40% / 0.15), transparent 50%)" }} />
+
+      <div className="container relative mx-auto px-6 pt-24 pb-16">
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          {/* Left - Text */}
           <div className="animate-slide-up">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-glass-border bg-muted/50 px-4 py-1.5 text-xs text-muted-foreground">
-              <Sparkles className="h-3.5 w-3.5 text-primary" /> v1.1.3 — Now with 9 platforms
+            <div className="mb-6 flex items-center gap-3">
+              <div className="h-px w-8 bg-primary" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-primary">eliteiq.tech</span>
             </div>
-            <h1 className="mb-6 text-4xl font-bold leading-tight tracking-tight lg:text-6xl">
-              <span className="gradient-text">eliteiq.tech</span>
+
+            <h1 className="mb-8 text-5xl font-bold leading-[1.1] tracking-tight lg:text-7xl">
+              <span className="text-muted-foreground">Automate</span>
               <br />
-              <span className="text-foreground">Multi-Platform Metadata Generator</span>
+              <span className="text-muted-foreground">Stock Metadata</span>
+              <br />
+              <span className="text-foreground">& Dominate</span>
+              <br />
+              <span className="gradient-text">Platforms.</span>
             </h1>
-            <p className="mb-8 max-w-lg text-lg text-muted-foreground">
-              Generate Adobe Stock, Shutterstock, Freepik metadata in seconds. AI-powered, bulk processing, 9 platforms supported.
+
+            <p className="mb-10 max-w-md text-base leading-relaxed text-muted-foreground">
+              AI-powered multi-platform metadata generator. Process bulk assets, export to 9 platforms, and scale your stock content business effortlessly.
             </p>
-            <div className="flex flex-wrap gap-4">
-              <Link to="/download" className="gradient-btn flex items-center gap-2 text-lg">
-                Download Now <ArrowRight className="h-5 w-5" />
+
+            <div className="flex flex-wrap items-center gap-4">
+              <Link to="/download" className="rounded-full border border-foreground/20 bg-foreground/5 px-8 py-3.5 text-sm font-semibold text-foreground transition-all hover:bg-foreground/10 hover:scale-105">
+                Get Started Free
               </Link>
-              <Link to="/pricing" className="rounded-xl border border-glass-border bg-muted/30 px-8 py-3 font-semibold text-foreground transition-all hover:bg-muted/50">
+              <Link to="/pricing" className="rounded-full border border-glass-border px-8 py-3.5 text-sm font-semibold text-muted-foreground transition-all hover:text-foreground hover:border-foreground/20">
                 View Pricing
               </Link>
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-2">
-              {platforms.map((p) => (
-                <span key={p} className="rounded-full border border-glass-border bg-muted/30 px-3 py-1 text-xs text-muted-foreground">{p}</span>
-              ))}
+            {/* Scroll indicator */}
+            <div className="mt-16 hidden items-center gap-3 lg:flex">
+              <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground">Features</span>
+              <ArrowDown className="h-4 w-4 text-muted-foreground animate-bounce" />
             </div>
           </div>
 
+          {/* Right - Image */}
           <div className="animate-fade-in">
             <div className="relative">
-              <div className="absolute -inset-4 rounded-3xl opacity-30 blur-2xl" style={{ background: "var(--gradient-primary)" }} />
-              <img src={heroImg} alt="eliteiq.tech Dashboard" className="relative rounded-2xl border border-glass-border shadow-2xl" width={1280} height={800} />
+              <div className="absolute -inset-1 rounded-2xl opacity-30 blur-xl" style={{ background: "var(--gradient-primary)" }} />
+              <img
+                src={heroImg}
+                alt="eliteiq.tech Dashboard Preview"
+                className="relative rounded-2xl border border-glass-border shadow-2xl"
+                width={1280}
+                height={800}
+              />
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    {/* Stats */}
-    <section className="py-16">
+    {/* Platforms strip */}
+    <section className="border-y border-glass-border py-8">
       <div className="container mx-auto px-6">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {stats.map((s) => (
-            <div key={s.label} className="glass-card p-6 text-center transition-transform hover:scale-105">
-              <s.icon className="mx-auto mb-3 h-8 w-8 text-primary" />
-              <div className="text-3xl font-bold gradient-text">{s.value}</div>
-              <div className="mt-1 text-sm text-muted-foreground">{s.label}</div>
-            </div>
+        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+          <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground">Supported Platforms</span>
+          <div className="hidden h-4 w-px bg-glass-border sm:block" />
+          {platforms.map((p) => (
+            <span key={p} className="text-sm font-medium text-muted-foreground/60 transition-colors hover:text-foreground">{p}</span>
           ))}
         </div>
       </div>
     </section>
 
     {/* Features */}
-    <section className="py-20">
+    <section className="py-24">
       <div className="container mx-auto px-6">
-        <div className="mb-12 text-center">
-          <h2 className="mb-3 text-3xl font-bold">Key Features</h2>
-          <p className="text-muted-foreground">Everything you need for professional stock metadata</p>
+        <div className="mb-16">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="h-px w-8 bg-primary" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-primary">Features</span>
+          </div>
+          <h2 className="text-4xl font-bold leading-tight lg:text-5xl">
+            <span className="text-foreground">Everything You Need</span>
+            <br />
+            <span className="text-muted-foreground">For Professional Metadata</span>
+          </h2>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((f) => (
-            <div key={f.title} className="glass-card group p-6 transition-all hover:scale-105 hover:border-primary/30">
-              <div className="mb-4 inline-flex rounded-xl p-3" style={{ background: "var(--gradient-subtle)" }}>
+            <div key={f.title} className="glass-card group p-8 transition-all hover:border-primary/30">
+              <div className="mb-6 inline-flex rounded-xl p-3" style={{ background: "var(--gradient-subtle)" }}>
                 <f.icon className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="mb-2 text-lg font-semibold">{f.title}</h3>
-              <p className="text-sm text-muted-foreground">{f.desc}</p>
+              <h3 className="mb-2 text-lg font-semibold text-foreground">{f.title}</h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">{f.desc}</p>
             </div>
           ))}
         </div>
@@ -109,26 +125,32 @@ const HomePage = () => (
     </section>
 
     {/* How It Works */}
-    <section className="py-20">
+    <section className="py-24">
       <div className="container mx-auto px-6">
-        <div className="mb-12 text-center">
-          <h2 className="mb-3 text-3xl font-bold">How It Works</h2>
-          <p className="text-muted-foreground">Four simple steps to perfect metadata</p>
+        <div className="mb-16">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="h-px w-8 bg-primary" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-primary">Process</span>
+          </div>
+          <h2 className="text-4xl font-bold leading-tight lg:text-5xl">
+            <span className="text-foreground">How It</span>{" "}
+            <span className="gradient-text">Works</span>
+          </h2>
         </div>
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map((s, i) => (
-            <div key={s.step} className="relative text-center">
+            <div key={s.step} className="relative">
               {i < steps.length - 1 && (
-                <div className="absolute right-0 top-10 hidden h-0.5 w-full translate-x-1/2 lg:block" style={{ background: "var(--gradient-primary)", opacity: 0.3 }} />
+                <div className="absolute right-0 top-10 hidden h-px w-full translate-x-1/2 bg-glass-border lg:block" />
               )}
-              <div className="relative mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl" style={{ background: "var(--gradient-subtle)" }}>
-                <s.icon className="h-8 w-8 text-primary" />
-                <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold" style={{ background: "var(--gradient-primary)" }}>
+              <div className="relative mb-6 flex h-16 w-16 items-center justify-center rounded-2xl" style={{ background: "var(--gradient-subtle)" }}>
+                <s.icon className="h-7 w-7 text-primary" />
+                <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-foreground" style={{ background: "var(--gradient-primary)" }}>
                   {s.step}
                 </span>
               </div>
-              <h3 className="mb-1 font-semibold">{s.title}</h3>
-              <p className="text-sm text-muted-foreground">{s.desc}</p>
+              <h3 className="mb-2 font-semibold text-foreground">{s.title}</h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">{s.desc}</p>
             </div>
           ))}
         </div>
@@ -136,11 +158,11 @@ const HomePage = () => (
     </section>
 
     {/* CTA */}
-    <section className="py-20">
+    <section className="py-24">
       <div className="container mx-auto px-6">
-        <div className="glass-card relative overflow-hidden p-12 text-center">
+        <div className="glass-card relative overflow-hidden p-16 text-center">
           <div className="absolute inset-0 opacity-10" style={{ background: "var(--gradient-primary)" }} />
-          <h2 className="relative mb-4 text-3xl font-bold">Ready to Automate Your Metadata?</h2>
+          <h2 className="relative mb-4 text-4xl font-bold text-foreground">Ready to Automate Your Metadata?</h2>
           <p className="relative mb-8 text-muted-foreground">Start with a free 30-day trial. No credit card required.</p>
           <Link to="/pricing" className="gradient-btn relative inline-flex items-center gap-2 text-lg">
             Get Started Now <ArrowRight className="h-5 w-5" />
