@@ -1,0 +1,1 @@
+CREATE POLICY "Authenticated users can read settings" ON public.admin_settings FOR SELECT TO authenticated USING (true);
