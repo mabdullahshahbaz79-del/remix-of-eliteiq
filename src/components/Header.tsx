@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Download, Shield } from "lucide-react";
+import { Menu, X, Download } from "lucide-react";
 
 const navItems = [
   { label: "Home", path: "/" },
@@ -39,9 +39,6 @@ const Header = () => {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Link to="/admin" className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
-            <Shield className="h-4 w-4" /> Admin
-          </Link>
           <Link to="/download" className="gradient-btn-sm flex items-center gap-1.5">
             <Download className="h-4 w-4" /> Download
           </Link>
@@ -64,9 +61,6 @@ const Header = () => {
               {item.label}
             </Link>
           ))}
-          <Link to="/admin" onClick={() => setIsOpen(false)} className="block rounded-lg px-4 py-3 text-sm text-muted-foreground">
-            Admin Login
-          </Link>
           <Link to="/download" onClick={() => setIsOpen(false)} className="gradient-btn-sm mt-2 block text-center">
             Download
           </Link>

@@ -19,12 +19,12 @@ const AdminDashboard = () => {
 
   const handleLogout = () => {
     sessionStorage.removeItem("admin_session");
-    navigate("/admin");
+    navigate("/abdullah-admin");
   };
 
   // Simple session check
   if (!sessionStorage.getItem("admin_session")) {
-    navigate("/admin");
+    navigate("/abdullah-admin");
     return null;
   }
 

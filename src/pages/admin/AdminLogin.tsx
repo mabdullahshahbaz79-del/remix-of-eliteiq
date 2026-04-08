@@ -19,7 +19,7 @@ const AdminLogin = () => {
       if (email === "mabdullahwork0@gmail.com" && password === "flower\\182!@#$") {
         sessionStorage.setItem("admin_session", "true");
         toast.success("Welcome back, Admin!");
-        navigate("/admin/dashboard");
+        navigate("/abdullah-admin/dashboard");
       } else {
         toast.error("Invalid credentials");
       }
