@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Check, Star, Sparkles } from "lucide-react";
+import { ScrollReveal } from "@/hooks/use-scroll-animation";
 
 const allFeatures = [
   "All 9 platforms support",
@@ -24,99 +25,120 @@ const paymentSteps = [
 ];
 
 const PricingPage = () => (
-  <div className="py-20">
-    <div className="container mx-auto px-6">
-      <div className="mb-16 text-center animate-slide-up">
-        <h1 className="mb-3 text-4xl font-bold">Simple Pricing</h1>
-        <p className="text-lg text-muted-foreground">Choose your plan — all plans unlock all 9 platforms</p>
-      </div>
-
-      <div className="mb-20 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {plans.map((plan) => (
-          <div
-            key={plan.name}
-            className={`glass-card relative flex flex-col p-6 transition-all hover:scale-105 ${plan.highlight ? "border-primary/40 ring-1 ring-primary/20" : ""}`}
-          >
-            {plan.badge && (
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="gradient-btn-sm flex items-center gap-1 text-xs">
-                  <Star className="h-3 w-3" /> {plan.badge}
-                </span>
-              </div>
-            )}
-
-            <div className="mb-6 pt-2 text-center">
-              <h3 className="mb-1 text-xl font-bold">{plan.name}</h3>
-              <p className="text-sm text-muted-foreground">{plan.duration}</p>
-              <div className="mt-4">
-                {plan.original && (
-                  <span className="mr-2 text-sm text-muted-foreground line-through">{plan.original}</span>
-                )}
-                <span className="text-3xl font-bold gradient-text">{plan.price}</span>
-              </div>
-              {plan.save && (
-                <span className="mt-2 inline-block rounded-full bg-success/10 px-3 py-1 text-xs font-medium text-success">{plan.save}</span>
-              )}
-            </div>
-
-            <ul className="mb-8 flex-1 space-y-3">
-              {allFeatures.map((f) => (
-                <li key={f} className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Check className="h-4 w-4 shrink-0 text-success" /> {f}
-                </li>
-              ))}
-            </ul>
-
-            <button className={`w-full rounded-xl py-3 font-semibold transition-all hover:scale-105 ${plan.highlight ? "gradient-btn" : "border border-glass-border bg-muted/30 text-foreground hover:bg-muted/50"}`}>
-              Get {plan.name}
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {/* Payment Instructions */}
-      <div className="glass-card mx-auto max-w-2xl p-8">
-        <div className="mb-6 flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-primary" />
-          <h2 className="text-xl font-bold">How to Get Your License Key</h2>
+  <div>
+    {/* Hero */}
+    <section className="relative pt-32 pb-16">
+      <div className="absolute inset-0 opacity-15" style={{ background: "radial-gradient(ellipse at 50% 0%, hsl(255 60% 64% / 0.3), transparent 60%)" }} />
+      <div className="container relative mx-auto px-6">
+        <div className="mb-4 flex items-center justify-center gap-3">
+          <div className="h-px w-8 bg-primary" />
+          <span className="text-xs font-semibold uppercase tracking-widest text-primary">Pricing</span>
+          <div className="h-px w-8 bg-primary" />
         </div>
+        <h1 className="mb-4 text-center text-4xl font-bold leading-tight lg:text-6xl">
+          <span className="text-foreground">Simple,</span>{" "}
+          <span className="gradient-text">Transparent</span>
+          <br />
+          <span className="text-muted-foreground">Pricing</span>
+        </h1>
+        <p className="mx-auto max-w-md text-center text-muted-foreground">
+          Choose your plan — all plans unlock all 9 platforms with full features.
+        </p>
+      </div>
+    </section>
 
-        <div className="mb-8 space-y-4">
-          {paymentSteps.map((step, i) => (
-            <div key={i} className="flex items-start gap-3">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold" style={{ background: "var(--gradient-primary)" }}>
-                {i + 1}
-              </span>
-              <span className="text-muted-foreground">{step}</span>
-            </div>
+    {/* Plans */}
+    <section className="py-16">
+      <div className="container mx-auto px-6">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {plans.map((plan, i) => (
+            <ScrollReveal key={plan.name} delay={i * 0.1}>
+              <div className={`glass-card relative flex h-full flex-col p-8 transition-all hover:border-primary/30 ${plan.highlight ? "border-primary/40 ring-1 ring-primary/20" : ""}`}>
+                {plan.badge && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <span className="flex items-center gap-1 rounded-full px-4 py-1 text-xs font-semibold text-foreground" style={{ background: "var(--gradient-primary)" }}>
+                      <Star className="h-3 w-3" /> {plan.badge}
+                    </span>
+                  </div>
+                )}
+
+                <div className="mb-8 pt-2">
+                  <h3 className="mb-1 text-lg font-semibold text-foreground">{plan.name}</h3>
+                  <p className="text-sm text-muted-foreground">{plan.duration}</p>
+                  <div className="mt-4">
+                    {plan.original && (
+                      <span className="mr-2 text-sm text-muted-foreground line-through">{plan.original}</span>
+                    )}
+                    <span className="text-3xl font-bold gradient-text">{plan.price}</span>
+                  </div>
+                  {plan.save && (
+                    <span className="mt-2 inline-block rounded-full bg-success/10 px-3 py-1 text-xs font-medium text-success">{plan.save}</span>
+                  )}
+                </div>
+
+                <ul className="mb-8 flex-1 space-y-3">
+                  {allFeatures.map((f) => (
+                    <li key={f} className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Check className="h-4 w-4 shrink-0 text-success" /> {f}
+                    </li>
+                  ))}
+                </ul>
+
+                <button className={`w-full rounded-full py-3 text-sm font-semibold transition-all hover:scale-105 ${plan.highlight ? "gradient-btn" : "border border-foreground/20 text-foreground hover:bg-foreground/10"}`}>
+                  Get {plan.name}
+                </button>
+              </div>
+            </ScrollReveal>
           ))}
         </div>
+      </div>
+    </section>
 
-        <div className="space-y-4 rounded-xl border border-glass-border bg-muted/20 p-6">
-          <h3 className="font-semibold">Payment Methods</h3>
-          <div className="space-y-3 text-sm">
-            <div className="flex items-center justify-between rounded-lg bg-muted/30 p-3">
-              <span className="font-medium">JazzCash</span>
-              <span className="text-muted-foreground">0329 7409088 (Salman Ahmad)</span>
+    {/* Payment Instructions */}
+    <section className="py-16">
+      <div className="container mx-auto px-6">
+        <ScrollReveal>
+          <div className="glass-card mx-auto max-w-2xl p-10">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="h-px w-8 bg-primary" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-primary">Payment</span>
             </div>
-            <div className="flex items-center justify-between rounded-lg bg-muted/30 p-3">
-              <span className="font-medium">Meezan Bank</span>
-              <span className="text-muted-foreground">50010112691566 (Salman Ahmad)</span>
+            <h2 className="mb-8 text-2xl font-bold text-foreground">How to Get Your License Key</h2>
+
+            <div className="mb-8 space-y-4">
+              {paymentSteps.map((step, i) => (
+                <div key={i} className="flex items-start gap-4">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-foreground" style={{ background: "var(--gradient-primary)" }}>
+                    {i + 1}
+                  </span>
+                  <span className="pt-1 text-muted-foreground">{step}</span>
+                </div>
+              ))}
             </div>
-            <div className="flex items-center justify-between rounded-lg bg-muted/30 p-3">
-              <span className="font-medium">Skrill</span>
-              <span className="text-muted-foreground">salmangraphics839@gmail.com</span>
+
+            <div className="space-y-3 rounded-2xl border border-glass-border bg-muted/10 p-6">
+              <h3 className="mb-4 text-sm font-semibold uppercase tracking-widest text-muted-foreground">Payment Methods</h3>
+              {[
+                { method: "JazzCash", detail: "0329 7409088 (Salman Ahmad)" },
+                { method: "Meezan Bank", detail: "50010112691566 (Salman Ahmad)" },
+                { method: "Skrill", detail: "salmangraphics839@gmail.com" },
+              ].map((p) => (
+                <div key={p.method} className="flex items-center justify-between rounded-xl bg-muted/20 p-4">
+                  <span className="text-sm font-medium text-foreground">{p.method}</span>
+                  <span className="text-sm text-muted-foreground">{p.detail}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 text-center">
+              <a href="https://wa.me/923297090888" target="_blank" rel="noopener noreferrer" className="gradient-btn inline-flex items-center gap-2">
+                Contact on WhatsApp
+              </a>
             </div>
           </div>
-        </div>
-
-        <div className="mt-6 text-center">
-          <a href="https://wa.me/923297090888" target="_blank" rel="noopener noreferrer" className="gradient-btn inline-flex items-center gap-2">
-            Contact on WhatsApp
-          </a>
-        </div>
+        </ScrollReveal>
       </div>
-    </div>
+    </section>
   </div>
 );
 
