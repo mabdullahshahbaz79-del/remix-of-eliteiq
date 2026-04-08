@@ -1,10 +1,11 @@
+import { Key, Brain, Layers, Settings } from "lucide-react";
+import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Key, Brain, Layers, Settings } from "lucide-react";
 
 const sections = [
   {
@@ -48,34 +49,54 @@ const sections = [
 ];
 
 const FAQPage = () => (
-  <div className="py-20">
-    <div className="container mx-auto px-6">
-      <div className="mb-16 text-center animate-slide-up">
-        <h1 className="mb-3 text-4xl font-bold">Frequently Asked Questions</h1>
-        <p className="text-lg text-muted-foreground">Everything you need to know about eliteiq.tech</p>
+  <div>
+    {/* Hero */}
+    <section className="relative pt-32 pb-16">
+      <div className="absolute inset-0 opacity-15" style={{ background: "radial-gradient(ellipse at 50% 0%, hsl(255 60% 64% / 0.2), transparent 60%)" }} />
+      <div className="container relative mx-auto px-6">
+        <div className="mb-4 flex items-center justify-center gap-3">
+          <div className="h-px w-8 bg-primary" />
+          <span className="text-xs font-semibold uppercase tracking-widest text-primary">Support</span>
+          <div className="h-px w-8 bg-primary" />
+        </div>
+        <h1 className="mb-4 text-center text-4xl font-bold leading-tight lg:text-6xl">
+          <span className="text-foreground">Frequently Asked</span>
+          <br />
+          <span className="gradient-text">Questions</span>
+        </h1>
+        <p className="mx-auto max-w-md text-center text-muted-foreground">
+          Everything you need to know about eliteiq.tech
+        </p>
       </div>
+    </section>
 
-      <div className="mx-auto max-w-3xl space-y-8">
-        {sections.map((section) => (
-          <div key={section.title} className="glass-card p-6">
-            <div className="mb-4 flex items-center gap-3">
-              <div className="rounded-xl p-2.5" style={{ background: "var(--gradient-subtle)" }}>
-                <section.icon className="h-5 w-5 text-primary" />
+    {/* FAQ Sections */}
+    <section className="py-16">
+      <div className="container mx-auto px-6">
+        <div className="mx-auto max-w-3xl space-y-8">
+          {sections.map((section, i) => (
+            <ScrollReveal key={section.title} delay={i * 0.1}>
+              <div className="glass-card p-8">
+                <div className="mb-6 flex items-center gap-4">
+                  <div className="rounded-xl p-3" style={{ background: "var(--gradient-subtle)" }}>
+                    <section.icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <h2 className="text-xl font-semibold text-foreground">{section.title}</h2>
+                </div>
+                <Accordion type="single" collapsible className="w-full">
+                  {section.items.map((item, j) => (
+                    <AccordionItem key={j} value={`${section.title}-${j}`} className="border-glass-border">
+                      <AccordionTrigger className="text-sm hover:no-underline text-left">{item.q}</AccordionTrigger>
+                      <AccordionContent className="text-sm text-muted-foreground">{item.a}</AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
               </div>
-              <h2 className="text-xl font-semibold">{section.title}</h2>
-            </div>
-            <Accordion type="single" collapsible className="w-full">
-              {section.items.map((item, i) => (
-                <AccordionItem key={i} value={`${section.title}-${i}`} className="border-glass-border">
-                  <AccordionTrigger className="text-sm hover:no-underline text-left">{item.q}</AccordionTrigger>
-                  <AccordionContent className="text-sm text-muted-foreground">{item.a}</AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-        ))}
+            </ScrollReveal>
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   </div>
 );
 
