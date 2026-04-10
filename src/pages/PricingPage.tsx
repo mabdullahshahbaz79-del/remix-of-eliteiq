@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
-import { Check, Star, Sparkles, Loader2 } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+import { Check, Star, Sparkles, Loader2, CheckCircle, XCircle } from "lucide-react";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 const allFeatures = [
@@ -28,7 +28,17 @@ const paymentSteps = [
 ];
 
 const PricingPage = () => {
+  const [searchParams] = useSearchParams();
+  const paymentStatus = searchParams.get("payment");
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (paymentStatus === "success") {
+      toast.success("Payment successful! Your license key has been generated and will be sent to your email shortly.");
+    } else if (paymentStatus === "cancelled") {
+      toast.error("Payment was cancelled.");
+    }
+  }, [paymentStatus]);
 
   const handleCheckout = async (planName: string) => {
     setLoadingPlan(planName);
@@ -52,6 +62,27 @@ const PricingPage = () => {
 
   return (
     <div>
+      {/* Payment Status Banner */}
+      {paymentStatus === "success" && (
+        <div className="bg-success/10 border-b border-success/20">
+          <div className="container mx-auto px-6 py-4 flex items-center justify-center gap-3">
+            <CheckCircle className="h-5 w-5 text-success" />
+            <p className="text-sm font-medium text-success">
+              Payment successful! Your license key has been generated and sent to your email.
+            </p>
+          </div>
+        </div>
+      )}
+      {paymentStatus === "cancelled" && (
+        <div className="bg-destructive/10 border-b border-destructive/20">
+          <div className="container mx-auto px-6 py-4 flex items-center justify-center gap-3">
+            <XCircle className="h-5 w-5 text-destructive" />
+            <p className="text-sm font-medium text-destructive">
+              Payment was cancelled. You can try again anytime.
+            </p>
+          </div>
+        </div>
+      )}
       {/* Hero */}
       <section className="relative pt-32 pb-16">
         <div className="absolute inset-0 opacity-15" style={{ background: "radial-gradient(ellipse at 50% 0%, hsl(255 60% 64% / 0.3), transparent 60%)" }} />
