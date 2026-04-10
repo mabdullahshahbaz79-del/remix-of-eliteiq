@@ -1,8 +1,8 @@
-import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from "framer-motion";
+import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, ArrowDown, Sparkles } from "lucide-react";
-import heroImg from "@/assets/hero-dashboard.jpg";
+import AnimatedDashboard from "@/components/AnimatedDashboard";
 
 const words = ["Metadata", "Rankings", "Revenue", "Growth"];
 
@@ -132,6 +132,22 @@ const VIPHero = () => {
 
   return (
     <section ref={containerRef} className="relative min-h-screen flex items-center overflow-hidden">
+      {/* Video background */}
+      <div className="absolute inset-0 z-0">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ opacity: 0.6 }}
+        >
+          <source src="/hero-bg.mp4" type="video/mp4" />
+        </video>
+        {/* Overlay gradient to blend video with content */}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, hsl(var(--background) / 0.4) 0%, hsl(var(--background) / 0.7) 50%, hsl(var(--background) / 0.95) 100%)" }} />
+      </div>
+
       <ParticleField />
       <GridLines />
 
@@ -149,7 +165,7 @@ const VIPHero = () => {
         transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      <div className="container relative mx-auto px-6 pt-24 pb-16">
+      <div className="container relative mx-auto px-6 pt-24 pb-16 z-10">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           {/* Left */}
           <div>
@@ -274,7 +290,7 @@ const VIPHero = () => {
             </motion.div>
           </div>
 
-          {/* Right - Hero Image */}
+          {/* Right - Animated Dashboard Mockup */}
           <motion.div
             initial={{ opacity: 0, scale: 0.85, rotateY: -8 }}
             animate={{ opacity: 1, scale: 1, rotateY: 0 }}
@@ -288,22 +304,16 @@ const VIPHero = () => {
             >
               {/* Glow */}
               <motion.div
-                className="absolute -inset-2 rounded-2xl opacity-40 blur-2xl"
+                className="absolute -inset-3 rounded-2xl opacity-40 blur-2xl"
                 style={{ background: "var(--gradient-primary)" }}
-                animate={{ opacity: [0.25, 0.45, 0.25] }}
+                animate={{ opacity: [0.2, 0.45, 0.2] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               />
               {/* Shine sweep */}
               <div className="relative overflow-hidden rounded-2xl">
-                <img
-                  src={heroImg}
-                  alt="eliteiq.tech Dashboard Preview"
-                  className="relative rounded-2xl border border-glass-border shadow-2xl"
-                  width={1280}
-                  height={800}
-                />
+                <AnimatedDashboard />
                 <motion.div
-                  className="absolute inset-0 rounded-2xl"
+                  className="absolute inset-0 rounded-2xl pointer-events-none"
                   style={{
                     background: "linear-gradient(105deg, transparent 40%, hsl(var(--foreground) / 0.06) 45%, transparent 50%)",
                   }}
