@@ -3,8 +3,12 @@ import { motion } from "framer-motion";
 import { Layers, Zap, BarChart3, Upload, Brain, Edit3, CheckCircle, ArrowRight } from "lucide-react";
 import VIPHero from "@/components/VIPHero";
 
-const platforms = [
-  "Vecteezy", "123RF", "Freepik", "Pond5", "Depositphotos", "Canva", "iStock", "Shutterstock", "Dreamstime"
+const stats = [
+  { value: "9+", label: "Platforms Supported" },
+  { value: "1000+", label: "Files at Once" },
+  { value: "100%", label: "AI Powered" },
+  { value: "Unlimited", label: "Exports" },
+  { value: "AI", label: "Analysis Built-in" },
 ];
 
 const features = [
