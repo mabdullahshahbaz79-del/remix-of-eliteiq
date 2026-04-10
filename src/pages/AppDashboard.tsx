@@ -8,6 +8,7 @@ import AssetSidePanel from '@/components/app/AssetSidePanel';
 import SettingsModal from '@/components/app/SettingsModal';
 import MetadataEditor from '@/components/app/MetadataEditor';
 import ExportCSVModal from '@/components/app/ExportCSVModal';
+import LicenseGate from '@/components/app/LicenseGate';
 
 const DashboardContent = () => {
   const { assets, showUpload, selectedAsset } = useAppContext();
@@ -31,9 +32,10 @@ const DashboardContent = () => {
 };
 
 const AppDashboard = () => (
-  <AppProvider>
-    <DashboardContent />
-  </AppProvider>
+  <LicenseGate>
+    <AppProvider>
+      <DashboardContent />
+    </AppProvider>
+  </LicenseGate>
 );
-
 export default AppDashboard;
