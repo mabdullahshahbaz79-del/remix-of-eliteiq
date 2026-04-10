@@ -28,7 +28,17 @@ const paymentSteps = [
 ];
 
 const PricingPage = () => {
+  const [searchParams] = useSearchParams();
+  const paymentStatus = searchParams.get("payment");
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (paymentStatus === "success") {
+      toast.success("Payment successful! Your license key has been generated and will be sent to your email shortly.");
+    } else if (paymentStatus === "cancelled") {
+      toast.error("Payment was cancelled.");
+    }
+  }, [paymentStatus]);
 
   const handleCheckout = async (planName: string) => {
     setLoadingPlan(planName);
