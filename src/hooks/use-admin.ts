@@ -46,11 +46,13 @@ export function useAdmin() {
 
     const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
     const url = `https://${projectId}.supabase.co/functions/v1/admin-api/${endpoint}`;
+    const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
     const res = await fetch(url, {
       method,
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
+        apikey: anonKey,
       },
       body: body ? JSON.stringify(body) : undefined,
     });
