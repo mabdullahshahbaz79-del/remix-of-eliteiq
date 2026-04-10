@@ -1,0 +1,1 @@
+CREATE POLICY "Allow public license verification" ON public.licenses FOR SELECT TO anon USING (true);
