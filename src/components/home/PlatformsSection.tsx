@@ -1,9 +1,32 @@
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 
+import adobeStockLogo from "@/assets/platforms/adobe-stock.png";
+import shutterstockLogo from "@/assets/platforms/shutterstock.png";
+import freepikLogo from "@/assets/platforms/freepik.png";
+import istockLogo from "@/assets/platforms/istock.png";
+import gettyLogo from "@/assets/platforms/getty.png";
+import dreamstimeLogo from "@/assets/platforms/dreamstime.png";
+import depositphotosLogo from "@/assets/platforms/depositphotos.png";
+import rf123Logo from "@/assets/platforms/123rf.png";
+import alamyLogo from "@/assets/platforms/alamy.png";
+import pond5Logo from "@/assets/platforms/pond5.png";
+import vecteezyLogo from "@/assets/platforms/vecteezy.png";
+import canvaLogo from "@/assets/platforms/canva.png";
+
 const platforms = [
-  "Adobe Stock", "Shutterstock", "Freepik", "iStock", "Getty Images", "Dreamstime",
-  "Depositphotos", "123RF", "Alamy", "Pond5", "Vecteezy", "Canva",
+  { name: "Adobe Stock", logo: adobeStockLogo },
+  { name: "Shutterstock", logo: shutterstockLogo },
+  { name: "Freepik", logo: freepikLogo },
+  { name: "iStock", logo: istockLogo },
+  { name: "Getty Images", logo: gettyLogo },
+  { name: "Dreamstime", logo: dreamstimeLogo },
+  { name: "Depositphotos", logo: depositphotosLogo },
+  { name: "123RF", logo: rf123Logo },
+  { name: "Alamy", logo: alamyLogo },
+  { name: "Pond5", logo: pond5Logo },
+  { name: "Vecteezy", logo: vecteezyLogo },
+  { name: "Canva", logo: canvaLogo },
 ];
 
 const badges = [
@@ -15,6 +38,40 @@ const badges = [
 
 const PlatformsSection = () => (
   <section className="relative py-28 overflow-hidden">
+    {/* VIP Background Effects */}
+    <div className="pointer-events-none absolute inset-0">
+      {/* Radial gradient base */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 60% at 50% 40%, hsl(var(--primary) / 0.08) 0%, transparent 70%)",
+        }}
+      />
+      {/* Floating orbs */}
+      <motion.div
+        className="absolute rounded-full blur-[100px]"
+        style={{ width: 400, height: 400, left: "5%", top: "10%", background: "hsl(var(--primary) / 0.12)" }}
+        animate={{ x: [0, 40, -20, 0], y: [0, -30, 20, 0], scale: [1, 1.2, 0.9, 1] }}
+        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute rounded-full blur-[120px]"
+        style={{ width: 350, height: 350, right: "5%", bottom: "10%", background: "hsl(var(--secondary) / 0.1)" }}
+        animate={{ x: [0, -30, 20, 0], y: [0, 40, -20, 0], scale: [1, 0.85, 1.15, 1] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+      />
+      {/* Grid pattern */}
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage:
+            "linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)",
+          backgroundSize: "50px 50px",
+        }}
+      />
+    </div>
+
     <div className="container relative mx-auto px-6">
       <motion.div
         className="text-center mb-16"
@@ -55,14 +112,17 @@ const PlatformsSection = () => (
             }}
             className="flex flex-col items-center gap-3 rounded-xl border border-glass-border bg-card/50 p-5 backdrop-blur-sm cursor-default"
           >
-            <motion.div
-              className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted/50 text-xl font-bold text-foreground"
-              whileHover={{ rotate: [0, -10, 10, 0] }}
-              transition={{ duration: 0.4 }}
-            >
-              {p.charAt(0)}
-            </motion.div>
-            <span className="text-xs text-muted-foreground text-center font-medium">{p}</span>
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted/30 overflow-hidden">
+              <img
+                src={p.logo}
+                alt={p.name}
+                loading="lazy"
+                width={40}
+                height={40}
+                className="h-10 w-10 object-contain"
+              />
+            </div>
+            <span className="text-xs text-muted-foreground text-center font-medium">{p.name}</span>
           </motion.div>
         ))}
       </div>
