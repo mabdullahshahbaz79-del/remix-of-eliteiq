@@ -40,32 +40,38 @@ const HomePage = () => (
   <div>
     <VIPHero />
 
-    {/* Platforms strip */}
+    {/* Stats strip */}
     <motion.section
-      className="border-y border-glass-border py-8 overflow-hidden"
+      className="py-10 overflow-hidden"
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-50px" }}
       variants={sectionVariants}
     >
       <div className="container mx-auto px-6">
-        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-          <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground">Supported Platforms</span>
-          <div className="hidden h-4 w-px bg-glass-border sm:block" />
-          {platforms.map((p, i) => (
-            <motion.span
-              key={p}
-              className="text-sm font-medium text-muted-foreground/60 transition-colors hover:text-foreground cursor-default"
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.06 }}
-              whileHover={{ scale: 1.15, color: "hsl(var(--foreground))" }}
-            >
-              {p}
-            </motion.span>
-          ))}
-        </div>
+        <motion.div
+          className="mx-auto max-w-4xl rounded-2xl border border-glass-border bg-[var(--glass-bg)] backdrop-blur-xl px-6 py-6 sm:px-10 sm:py-7"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="flex flex-wrap items-center justify-between gap-y-6 gap-x-4">
+            {stats.map((s, i) => (
+              <motion.div
+                key={s.label}
+                className="flex flex-col items-center text-center flex-1 min-w-[100px]"
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <span className="text-xl font-bold text-foreground sm:text-2xl">{s.value}</span>
+                <span className="mt-1 text-xs text-muted-foreground tracking-wide">{s.label}</span>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </motion.section>
 
