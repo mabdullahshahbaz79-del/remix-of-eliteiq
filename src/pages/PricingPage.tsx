@@ -12,10 +12,10 @@ const allFeatures = [
 ];
 
 const plans = [
-  { name: "Starter", price: "₨499", original: null, duration: "1 Month", save: null, badge: null, highlight: false },
-  { name: "Creator", price: "₨1,347", original: "₨1,497", duration: "3 Months", save: "Save 10%", badge: "Popular", highlight: true },
-  { name: "Pro", price: "₨2,546", original: "₨2,995", duration: "6 Months", save: "Save 15%", badge: null, highlight: false },
-  { name: "Studio", price: "₨4,790", original: "₨5,988", duration: "1 Year", save: "Save 20%", badge: "Best Value", highlight: true },
+  { name: "Starter", price: "$2.99", original: null, duration: "1 Month", save: null, badge: null, highlight: false },
+  { name: "Creator", price: "$7.49", original: "$8.97", duration: "3 Months", save: "Save 17%", badge: "Popular", highlight: true },
+  { name: "Pro", price: "$14.99", original: "$17.94", duration: "6 Months", save: "Save 16%", badge: null, highlight: false },
+  { name: "Studio", price: "$29.99", original: "$35.88", duration: "1 Year", save: "Save 16%", badge: "Best Value", highlight: true },
 ];
 
 const paymentSteps = [
