@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Sparkles, KeyRound, Loader2, ShieldCheck, AlertCircle } from 'lucide-react';
@@ -32,29 +31,23 @@ const LicenseGate = ({ children }: Props) => {
     setError('');
 
     try {
-      const { data, error: dbError } = await supabase
-        .from('licenses')
-        .select('*')
-        .eq('license_key', key.trim().toUpperCase())
-        .single();
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      const url = `https://${projectId}.supabase.co/functions/v1/admin-api/verify-license`;
 
-      if (dbError || !data) {
-        if (!silent) setError('Invalid license key. Please check and try again.');
-        setLoading(false);
-        setVerifying(false);
-        return;
-      }
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: anonKey,
+        },
+        body: JSON.stringify({ license_key: key.trim().toUpperCase() }),
+      });
 
-      if (data.status !== 'active') {
-        if (!silent) setError(`License is ${data.status}. Please contact support.`);
-        setLoading(false);
-        setVerifying(false);
-        localStorage.removeItem(LICENSE_STORAGE_KEY);
-        return;
-      }
+      const data = await res.json();
 
-      if (data.expires_at && new Date(data.expires_at) < new Date()) {
-        if (!silent) setError('License has expired. Please renew your subscription.');
+      if (!data.valid) {
+        if (!silent) setError(data.error || 'Invalid license key.');
         setLoading(false);
         setVerifying(false);
         localStorage.removeItem(LICENSE_STORAGE_KEY);
@@ -94,7 +87,6 @@ const LicenseGate = ({ children }: Props) => {
   return (
     <div className="min-h-screen bg-[#0B1120] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
             <Sparkles className="h-8 w-8 text-cyan-400" />
@@ -106,7 +98,6 @@ const LicenseGate = ({ children }: Props) => {
           <p className="text-white/50 text-sm">Enter your license key to continue</p>
         </div>
 
-        {/* Card */}
         <div className="bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-xl">
           <div className="flex items-center gap-3 mb-6">
             <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-purple-600 to-cyan-500 flex items-center justify-center">

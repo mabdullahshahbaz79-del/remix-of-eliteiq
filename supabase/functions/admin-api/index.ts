@@ -39,10 +39,8 @@ Deno.serve(async (req) => {
           status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      // Sign in via Supabase Auth
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
-        // If user doesn't exist, create them
         if (error.message.includes("Invalid login")) {
           const { data: signUpData, error: signUpError } = await supabase.auth.admin.createUser({
             email, password, email_confirm: true,
@@ -67,6 +65,82 @@ Deno.serve(async (req) => {
         });
       }
       return new Response(JSON.stringify({ session: data.session, user: data.user }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Public license verification (no auth needed)
+    if (action === "verify-license" && req.method === "POST") {
+      const body = await req.json();
+      const key = (body.license_key || "").trim().toUpperCase();
+      if (!key) {
+        return new Response(JSON.stringify({ valid: false, error: "No license key provided" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const { data: license, error: dbError } = await supabase
+        .from("licenses")
+        .select("*")
+        .eq("license_key", key)
+        .single();
+
+      if (dbError || !license) {
+        // Log failed attempt
+        await supabase.from("activity_logs").insert({
+          action: "License verification failed - invalid key",
+          action_type: "license_verify",
+          target_license: key,
+          status: "failed",
+          ip_address: req.headers.get("x-forwarded-for") || "unknown",
+        });
+        return new Response(JSON.stringify({ valid: false, error: "Invalid license key" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (license.status !== "active") {
+        await supabase.from("activity_logs").insert({
+          action: `License verification failed - status: ${license.status}`,
+          action_type: "license_verify",
+          target_license: key,
+          status: "failed",
+          ip_address: req.headers.get("x-forwarded-for") || "unknown",
+        });
+        return new Response(JSON.stringify({ valid: false, error: `License is ${license.status}` }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (license.expires_at && new Date(license.expires_at) < new Date()) {
+        await supabase.from("licenses").update({ status: "expired" }).eq("id", license.id);
+        await supabase.from("activity_logs").insert({
+          action: "License verification failed - expired",
+          action_type: "license_verify",
+          target_license: key,
+          status: "failed",
+          ip_address: req.headers.get("x-forwarded-for") || "unknown",
+        });
+        return new Response(JSON.stringify({ valid: false, error: "License has expired" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Success - log activation
+      await supabase.from("activity_logs").insert({
+        action: "License verified successfully",
+        action_type: "license_verify",
+        target_license: key,
+        status: "success",
+        ip_address: req.headers.get("x-forwarded-for") || "unknown",
+        details: { plan: license.plan, expires_at: license.expires_at },
+      });
+
+      return new Response(JSON.stringify({
+        valid: true,
+        plan: license.plan,
+        expires_at: license.expires_at,
+        max_activations: license.max_activations,
+      }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
