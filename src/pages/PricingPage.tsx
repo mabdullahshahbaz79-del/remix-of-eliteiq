@@ -62,6 +62,27 @@ const PricingPage = () => {
 
   return (
     <div>
+      {/* Payment Status Banner */}
+      {paymentStatus === "success" && (
+        <div className="bg-success/10 border-b border-success/20">
+          <div className="container mx-auto px-6 py-4 flex items-center justify-center gap-3">
+            <CheckCircle className="h-5 w-5 text-success" />
+            <p className="text-sm font-medium text-success">
+              Payment successful! Your license key has been generated and sent to your email.
+            </p>
+          </div>
+        </div>
+      )}
+      {paymentStatus === "cancelled" && (
+        <div className="bg-destructive/10 border-b border-destructive/20">
+          <div className="container mx-auto px-6 py-4 flex items-center justify-center gap-3">
+            <XCircle className="h-5 w-5 text-destructive" />
+            <p className="text-sm font-medium text-destructive">
+              Payment was cancelled. You can try again anytime.
+            </p>
+          </div>
+        </div>
+      )}
       {/* Hero */}
       <section className="relative pt-32 pb-16">
         <div className="absolute inset-0 opacity-15" style={{ background: "radial-gradient(ellipse at 50% 0%, hsl(255 60% 64% / 0.3), transparent 60%)" }} />
