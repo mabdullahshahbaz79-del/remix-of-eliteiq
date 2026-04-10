@@ -7,7 +7,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-const LICENSE_STORAGE_KEY = 'adobemeta-license-key';
+const LICENSE_STORAGE_KEY = 'eliteiq-license-key';
 
 const LicenseGate = ({ children }: Props) => {
   const [licenseKey, setLicenseKey] = useState('');
@@ -91,8 +91,8 @@ const LicenseGate = ({ children }: Props) => {
           <div className="inline-flex items-center gap-2 mb-4">
             <Sparkles className="h-8 w-8 text-cyan-400" />
             <span className="text-2xl font-bold">
-              <span className="text-purple-400">AdobeMeta</span>{' '}
-              <span className="text-white">AI</span>
+              <span className="text-purple-400">Elite</span>{' '}
+              <span className="text-white">IQ</span>
             </span>
           </div>
           <p className="text-white/50 text-sm">Enter your license key to continue</p>

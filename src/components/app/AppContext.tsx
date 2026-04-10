@@ -38,7 +38,7 @@ export const useAppContext = () => {
 
 const loadSettings = (): AppSettings => {
   try {
-    const s = localStorage.getItem('adobemeta-settings');
+    const s = localStorage.getItem('eliteiq-settings');
     return s ? { ...defaultSettings, ...JSON.parse(s) } : defaultSettings;
   } catch { return defaultSettings; }
 };
@@ -55,7 +55,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [showMetadataEditor, setShowMetadataEditor] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('adobemeta-settings', JSON.stringify(settings));
+    localStorage.setItem('eliteiq-settings', JSON.stringify(settings));
   }, [settings]);
 
   const addAssets = useCallback((newAssets: Asset[]) => {
