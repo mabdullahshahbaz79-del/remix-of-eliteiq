@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
-import { Check, Star, Sparkles, Loader2 } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+import { Check, Star, Sparkles, Loader2, CheckCircle, XCircle } from "lucide-react";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 const allFeatures = [
