@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@18.5.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -7,12 +6,16 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const PLAN_PRICES: Record<string, string> = {
-  Starter: "price_1TKZ7EGdkPJnSWvgS9y87bGx",
-  Creator: "price_1TKZ7gGdkPJnSWvgNVXnwX0V",
-  Pro: "price_1TKZ7uGdkPJnSWvgf3mDjq2G",
-  Studio: "price_1TKZ7yGdkPJnSWvgDjrL3aRT",
+// TODO: Replace these with your actual LemonSqueezy variant IDs
+const PLAN_VARIANTS: Record<string, string> = {
+  Starter: "VARIANT_ID_STARTER",
+  Creator: "VARIANT_ID_CREATOR",
+  Pro: "VARIANT_ID_PRO",
+  Studio: "VARIANT_ID_STUDIO",
 };
+
+// TODO: Replace with your actual LemonSqueezy Store ID
+const STORE_ID = "STORE_ID_HERE";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -22,46 +25,74 @@ serve(async (req) => {
   try {
     const { plan, email } = await req.json();
 
-    if (!plan || !PLAN_PRICES[plan]) {
+    if (!plan || !PLAN_VARIANTS[plan]) {
       return new Response(JSON.stringify({ error: "Invalid plan" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 400,
       });
     }
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2025-08-27.basil",
-    });
-
-    // Check for existing customer
-    let customerId: string | undefined;
-    if (email) {
-      const customers = await stripe.customers.list({ email, limit: 1 });
-      if (customers.data.length > 0) {
-        customerId = customers.data[0].id;
-      }
+    const apiKey = Deno.env.get("LEMONSQUEEZY_API_KEY");
+    if (!apiKey) {
+      throw new Error("LemonSqueezy API key not configured");
     }
 
     const origin = req.headers.get("origin") || "https://adobescribe-pro.lovable.app";
 
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      customer_email: customerId ? undefined : email || undefined,
-      line_items: [
-        {
-          price: PLAN_PRICES[plan],
-          quantity: 1,
+    const checkoutBody = {
+      data: {
+        type: "checkouts",
+        attributes: {
+          checkout_options: {
+            embed: false,
+          },
+          checkout_data: {
+            email: email || undefined,
+            custom: {
+              plan: plan,
+            },
+          },
+          product_options: {
+            redirect_url: `${origin}/pricing?payment=success`,
+          },
         },
-      ],
-      mode: "payment",
-      success_url: `${origin}/pricing?payment=success`,
-      cancel_url: `${origin}/pricing?payment=cancelled`,
-      metadata: {
-        plan,
+        relationships: {
+          store: {
+            data: {
+              type: "stores",
+              id: STORE_ID,
+            },
+          },
+          variant: {
+            data: {
+              type: "variants",
+              id: PLAN_VARIANTS[plan],
+            },
+          },
+        },
       },
+    };
+
+    const response = await fetch("https://api.lemonsqueezy.com/v1/checkouts", {
+      method: "POST",
+      headers: {
+        "Accept": "application/vnd.api+json",
+        "Content-Type": "application/vnd.api+json",
+        "Authorization": `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(checkoutBody),
     });
 
-    return new Response(JSON.stringify({ url: session.url }), {
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("LemonSqueezy API error:", errorText);
+      throw new Error(`LemonSqueezy API error: ${response.status}`);
+    }
+
+    const result = await response.json();
+    const checkoutUrl = result.data.attributes.url;
+
+    return new Response(JSON.stringify({ url: checkoutUrl }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
