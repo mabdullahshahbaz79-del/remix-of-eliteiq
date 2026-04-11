@@ -1,10 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "npm:@supabase/supabase-js@2.49.1";
-
-const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-  apiVersion: "2025-08-27.basil",
-});
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -25,13 +20,29 @@ function generateKey(prefix: string): string {
   return `${prefix}-${seg(4)}-${seg(4)}`;
 }
 
+async function verifySignature(body: string, signature: string, secret: string): Promise<boolean> {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const signed = await crypto.subtle.sign("HMAC", key, encoder.encode(body));
+  const hex = Array.from(new Uint8Array(signed))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return hex === signature;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200 });
   }
 
-  const signature = req.headers.get("stripe-signature");
-  const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
+  const signature = req.headers.get("x-signature");
+  const webhookSecret = Deno.env.get("LEMONSQUEEZY_WEBHOOK_SECRET");
 
   if (!signature || !webhookSecret) {
     return new Response("Missing signature or webhook secret", { status: 400 });
@@ -39,34 +50,37 @@ serve(async (req) => {
 
   const body = await req.text();
 
-  let event: Stripe.Event;
-  try {
-    event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    console.error("Webhook signature verification failed:", msg);
-    return new Response(`Webhook Error: ${msg}`, { status: 400 });
+  const isValid = await verifySignature(body, signature, webhookSecret);
+  if (!isValid) {
+    console.error("Webhook signature verification failed");
+    return new Response("Invalid signature", { status: 400 });
   }
 
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object as Stripe.Checkout.Session;
-    const planName = session.metadata?.plan;
-    const customerEmail = session.customer_details?.email || session.customer_email;
+  let event;
+  try {
+    event = JSON.parse(body);
+  } catch {
+    return new Response("Invalid JSON", { status: 400 });
+  }
+
+  const eventName = event.meta?.event_name;
+
+  if (eventName === "order_completed") {
+    const planName = event.meta?.custom_data?.plan;
+    const customerEmail = event.data?.attributes?.user_email;
 
     if (!planName || !PLAN_MAP[planName]) {
-      console.error("Unknown plan in session metadata:", planName);
+      console.error("Unknown plan in webhook data:", planName);
       return new Response("Unknown plan", { status: 400 });
     }
 
     const config = PLAN_MAP[planName];
     const licenseKey = generateKey(config.prefix);
 
-    // Calculate expiry
     const now = new Date();
     const expiresAt = new Date(now);
     expiresAt.setMonth(expiresAt.getMonth() + config.months);
 
-    // Insert license
     const { error: licenseError } = await supabase.from("licenses").insert({
       license_key: licenseKey,
       plan: config.plan,
@@ -83,19 +97,20 @@ serve(async (req) => {
       return new Response("License creation failed", { status: 500 });
     }
 
-    // Record transaction
-    const amountPaid = session.amount_total ? session.amount_total / 100 : 0;
+    const amountPaid = (event.data?.attributes?.total || 0) / 100;
+    const currency = event.data?.attributes?.currency || "usd";
+    const orderId = event.data?.id;
+
     await supabase.from("transactions").insert({
       amount: amountPaid,
-      currency: session.currency || "usd",
+      currency,
       status: "completed",
-      payment_method: "stripe",
-      reference: session.id,
+      payment_method: "lemonsqueezy",
+      reference: orderId ? String(orderId) : null,
     });
 
-    // Log activity
     await supabase.from("activity_logs").insert({
-      action: `License ${licenseKey} auto-generated for ${customerEmail} (${planName} plan via Stripe)`,
+      action: `License ${licenseKey} auto-generated for ${customerEmail} (${planName} plan via LemonSqueezy)`,
       action_type: "license_auto_generate",
       target_license: licenseKey,
       target_email: customerEmail || null,
@@ -103,8 +118,8 @@ serve(async (req) => {
       details: {
         plan: planName,
         amount: amountPaid,
-        currency: session.currency,
-        stripe_session_id: session.id,
+        currency,
+        lemonsqueezy_order_id: orderId,
       },
     });
 
