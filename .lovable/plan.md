@@ -1,111 +1,56 @@
 
 
-# Software Dashboard (AdobeMeta AI) — Implementation Plan
+## Plan: Replace Stripe with LemonSqueezy
 
-This is the main software interface that Electron will load at `/app`. It's a standalone route with its own layout — completely separate from the marketing website.
+### What Changes
 
-## Overview
+Replace the current Stripe payment integration with LemonSqueezy for checkout and webhook-based license generation. The flow stays identical: user clicks plan button -> redirected to checkout -> webhook auto-generates license key.
 
-Build a full-featured asset management dashboard at `/app` with: file upload, grid/list view, metadata generation (via Lovable AI), inline editing, CSV export, and a settings panel. All state stored locally (localStorage/IndexedDB) since this is desktop software.
+### Setup Required (Before Code)
 
-## Architecture
+1. **Create a LemonSqueezy account** at lemonsqueezy.com
+2. **Create a Store** and add 4 products (Starter, Creator, Pro, Studio) with correct prices
+3. **Note the Store ID and Variant IDs** for each plan (each product has a variant ID)
+4. **Create an API key** from LemonSqueezy Settings -> API
+5. **Create a Webhook** in LemonSqueezy pointing to your backend function URL, listening for `order_completed` event, with a signing secret
 
-```text
-/app (hidden route, no website nav link)
-├── AppDashboard.tsx (main page)
-├── components/app/
-│   ├── AppNavbar.tsx         — fixed top bar (logo, search, actions)
-│   ├── AssetGrid.tsx         — grid/list view of uploaded assets
-│   ├── AssetCard.tsx         — individual asset card with thumbnail
-│   ├── EmptyState.tsx        — "No Assets Yet" placeholder
-│   ├── UploadZone.tsx        — drag & drop upload area
-│   ├── MetadataEditor.tsx    — table view for editing metadata
-│   ├── AssetSidePanel.tsx    — right panel for selected asset details
-│   ├── SettingsModal.tsx     — settings dialog with 4 tabs
-│   └── types.ts              — shared types (Asset, Metadata, etc.)
-```
+### Technical Steps
 
-## Implementation Steps
+**Step 1: Add secrets**
+- Add `LEMONSQUEEZY_API_KEY` (API key from LS dashboard)
+- Add `LEMONSQUEEZY_WEBHOOK_SECRET` (signing secret you set when creating webhook)
 
-### 1. Create Types & State Management (`src/components/app/types.ts`)
-- Define `Asset` type: id, file, thumbnail, name, size, compressedSize, status (ready/processing/done/error), metadata (title, keywords, description, confidence)
-- Define `Settings` type: aiMode, apiKeys, metadataRules, advanced options
-- Use React context + localStorage for persistence
+**Step 2: Rewrite `create-checkout` edge function**
+- Replace Stripe SDK with LemonSqueezy REST API (`POST https://api.lemonsqueezy.com/v1/checkouts`)
+- Map plan names to LemonSqueezy variant IDs
+- Create checkout with variant ID, redirect URLs, and plan metadata in `custom` field
+- Return the checkout URL
 
-### 2. App Route & Layout (`src/pages/AppDashboard.tsx`)
-- Add `/app` route in `App.tsx` (standalone, no Layout wrapper)
-- Full-screen dark dashboard with its own navbar
-- State: assets array, selectedAssets, viewMode (grid/list), showUpload, showSettings, selectedAsset for side panel
+**Step 3: Rewrite `stripe-webhook` -> `lemonsqueezy-webhook` edge function**
+- Verify signature using HMAC SHA-256 with `X-Signature` header
+- Listen for `order_completed` event
+- Extract plan name from `meta.custom_data.plan`
+- Extract customer email from event data
+- Generate license key (same logic as current)
+- Insert license, transaction, and activity log (same DB logic)
 
-### 3. Top Navbar (`src/components/app/AppNavbar.tsx`)
-- Fixed top bar matching dark theme
-- Left: "AdobeMeta AI" logo + PRO/FREE badge
-- Center: Search input
-- Right: Download Zip, Export CSV, Generate All, Upload Assets (cyan gradient), Settings gear
-- Counters update dynamically based on assets state
+**Step 4: Update `PricingPage.tsx`**
+- Change payment step text from "Stripe" to "LemonSqueezy"
+- Keep the same `handleCheckout` flow (calls `create-checkout` edge function)
 
-### 4. Empty State (`src/components/app/EmptyState.tsx`)
-- Large upload icon, heading, subtext, CTA button
-- Shown when no assets uploaded
+**Step 5: Delete old Stripe webhook function**
+- Remove `supabase/functions/stripe-webhook/` and deploy deletion
 
-### 5. Upload Zone (`src/components/app/UploadZone.tsx`)
-- Drag & drop with dashed gradient border
-- File type indicators (JPEG, PNG, WebP, MP4, MOV, AI, EPS, SVG)
-- Browse Files button using hidden file input
-- Drag-over glow effect
-- Creates thumbnails via canvas/URL.createObjectURL
-- Close button to collapse
+### Files to Create/Modify
+- `supabase/functions/create-checkout/index.ts` — rewrite for LemonSqueezy API
+- `supabase/functions/lemonsqueezy-webhook/index.ts` — new webhook handler
+- `src/pages/PricingPage.tsx` — update text references
+- Delete `supabase/functions/stripe-webhook/index.ts`
 
-### 6. Asset Card & Grid (`src/components/app/AssetCard.tsx`, `AssetGrid.tsx`)
-- Grid layout (4 cols desktop, 2 tablet, 1 mobile)
-- Card: thumbnail, file size badge, status badge, filename, Generate button, delete button, select checkbox
-- Hover: scale-105, gradient border glow
-- List view alternative with table-like rows
-- View toggle buttons (grid/list)
-- Multi-select mode with bulk actions bar
-
-### 7. Metadata Generation (Edge Function + Lovable AI)
-- Create `supabase/functions/generate-metadata/index.ts`
-- Uses Lovable AI (google/gemini-3-flash-preview) to analyze uploaded images
-- Accepts base64 image, returns: title, description, keywords array, confidence scores
-- Platform-specific metadata for all 9 platforms
-- Frontend shows loading spinner per card during generation
-
-### 8. Metadata Editor (`src/components/app/MetadataEditor.tsx`)
-- Table view: File Name, Title (editable), Keywords (tag input), Description (textarea), Confidence bar, Platform readiness badges
-- Inline editing: click cell to edit, save on blur/enter
-- Bulk edit mode for applying same keywords to multiple assets
-
-### 9. Asset Side Panel (`src/components/app/AssetSidePanel.tsx`)
-- Slides in from right when asset selected
-- Large preview, file details (name, size, dimensions)
-- Metadata preview with tags
-- Actions: Regenerate, Edit, Download
-
-### 10. Settings Modal (`src/components/app/SettingsModal.tsx`)
-- Dialog with 4 tabs using shadcn Tabs
-- Tab 1 - AI Mode: Auto/Cloud/Offline toggle, provider dropdown, test connection
-- Tab 2 - API Keys: inputs for OpenAI/Gemini/Groq/Ollama with show/hide, saved to localStorage
-- Tab 3 - Metadata Rules: keyword strategy toggles, count slider, negative keywords textarea, auto-capitalize/dedup toggles
-- Tab 4 - Advanced: parallel workers slider, description length, confidence threshold, export format
-
-### 11. CSV Export
-- Generate CSV per platform with platform-specific column formats
-- Download as zip when multiple platforms selected
-- Uses client-side CSV generation (no backend needed)
-
-### 12. Route Registration
-- Add `/app` to `App.tsx` as standalone route (no Layout wrapper)
-- No link to this page from the marketing site
-
-## Database
-- No new tables needed — this dashboard works with local state (files stored in memory/IndexedDB)
-- Metadata generation uses existing edge function infrastructure
-
-## Technical Notes
-- All file processing happens client-side (FileReader, canvas for thumbnails)
-- Settings persist in localStorage
-- AI metadata generation calls edge function with base64-encoded images
-- CSV export uses Blob + download link pattern
-- Designed for Electron wrapping: no server dependencies for core UI
+### What You Need to Provide
+After approval, I will need:
+1. Your **LemonSqueezy API key**
+2. Your **LemonSqueezy Store ID**
+3. The **Variant IDs** for each plan (Starter, Creator, Pro, Studio)
+4. A **webhook signing secret** (you choose any random string)
 
