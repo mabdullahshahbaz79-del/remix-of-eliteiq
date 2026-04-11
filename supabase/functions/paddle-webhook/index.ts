@@ -20,7 +20,19 @@ function generateKey(prefix: string): string {
   return `${prefix}-${seg(4)}-${seg(4)}`;
 }
 
-async function verifySignature(body: string, signature: string, secret: string): Promise<boolean> {
+async function verifyPaddleSignature(body: string, signatureHeader: string, secret: string): Promise<boolean> {
+  // Paddle-Signature format: ts=TIMESTAMP;h1=HASH
+  const parts: Record<string, string> = {};
+  for (const part of signatureHeader.split(";")) {
+    const [key, val] = part.split("=");
+    if (key && val) parts[key.trim()] = val.trim();
+  }
+
+  const ts = parts["ts"];
+  const h1 = parts["h1"];
+  if (!ts || !h1) return false;
+
+  const signedPayload = `${ts}:${body}`;
   const encoder = new TextEncoder();
   const key = await crypto.subtle.importKey(
     "raw",
@@ -29,11 +41,12 @@ async function verifySignature(body: string, signature: string, secret: string):
     false,
     ["sign"]
   );
-  const signed = await crypto.subtle.sign("HMAC", key, encoder.encode(body));
+  const signed = await crypto.subtle.sign("HMAC", key, encoder.encode(signedPayload));
   const hex = Array.from(new Uint8Array(signed))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
-  return hex === signature;
+
+  return hex === h1;
 }
 
 serve(async (req) => {
@@ -41,18 +54,18 @@ serve(async (req) => {
     return new Response(null, { status: 200 });
   }
 
-  const signature = req.headers.get("x-signature");
-  const webhookSecret = Deno.env.get("LEMONSQUEEZY_WEBHOOK_SECRET");
+  const signatureHeader = req.headers.get("paddle-signature");
+  const webhookSecret = Deno.env.get("PADDLE_WEBHOOK_SECRET");
 
-  if (!signature || !webhookSecret) {
+  if (!signatureHeader || !webhookSecret) {
     return new Response("Missing signature or webhook secret", { status: 400 });
   }
 
   const body = await req.text();
 
-  const isValid = await verifySignature(body, signature, webhookSecret);
+  const isValid = await verifyPaddleSignature(body, signatureHeader, webhookSecret);
   if (!isValid) {
-    console.error("Webhook signature verification failed");
+    console.error("Paddle webhook signature verification failed");
     return new Response("Invalid signature", { status: 400 });
   }
 
@@ -63,11 +76,12 @@ serve(async (req) => {
     return new Response("Invalid JSON", { status: 400 });
   }
 
-  const eventName = event.meta?.event_name;
+  const eventType = event.event_type;
 
-  if (eventName === "order_completed") {
-    const planName = event.meta?.custom_data?.plan;
-    const customerEmail = event.data?.attributes?.user_email;
+  if (eventType === "transaction.completed") {
+    const customData = event.data?.custom_data;
+    const planName = customData?.plan;
+    const customerEmail = event.data?.customer?.email || event.data?.billing_details?.email;
 
     if (!planName || !PLAN_MAP[planName]) {
       console.error("Unknown plan in webhook data:", planName);
@@ -97,20 +111,21 @@ serve(async (req) => {
       return new Response("License creation failed", { status: 500 });
     }
 
-    const amountPaid = (event.data?.attributes?.total || 0) / 100;
-    const currency = event.data?.attributes?.currency || "usd";
-    const orderId = event.data?.id;
+    const totals = event.data?.details?.totals;
+    const amountPaid = totals ? parseFloat(totals.grand_total) / 100 : 0;
+    const currency = event.data?.currency_code || "USD";
+    const transactionId = event.data?.id;
 
     await supabase.from("transactions").insert({
       amount: amountPaid,
       currency,
       status: "completed",
-      payment_method: "lemonsqueezy",
-      reference: orderId ? String(orderId) : null,
+      payment_method: "paddle",
+      reference: transactionId ? String(transactionId) : null,
     });
 
     await supabase.from("activity_logs").insert({
-      action: `License ${licenseKey} auto-generated for ${customerEmail} (${planName} plan via LemonSqueezy)`,
+      action: `License ${licenseKey} auto-generated for ${customerEmail} (${planName} plan via Paddle)`,
       action_type: "license_auto_generate",
       target_license: licenseKey,
       target_email: customerEmail || null,
@@ -119,7 +134,7 @@ serve(async (req) => {
         plan: planName,
         amount: amountPaid,
         currency,
-        lemonsqueezy_order_id: orderId,
+        paddle_transaction_id: transactionId,
       },
     });
 
