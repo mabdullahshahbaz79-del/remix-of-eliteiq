@@ -23,7 +23,7 @@ const plans = [
 
 const paymentSteps = [
   "Choose your plan and click the button",
-  "Complete payment via LemonSqueezy secure checkout",
+  "Complete payment via Paddle secure checkout",
   "Receive your license key via email within minutes",
 ];
 
