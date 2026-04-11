@@ -8,10 +8,10 @@ const corsHeaders = {
 
 // TODO: Replace with your actual Paddle Price IDs
 const PLAN_PRICES: Record<string, string> = {
-  Starter: "PRICE_ID_STARTER",
-  Creator: "PRICE_ID_CREATOR",
-  Pro: "PRICE_ID_PRO",
-  Studio: "PRICE_ID_STUDIO",
+  Starter: "pri_01kny0s65drgrxz0v1kefsjxn2",
+  Creator: "pri_01kny0ts2vwaqgtxhh28gw1bvs",
+  Pro: "pri_01kny0yxxdgbm597wgs57re975",
+  Studio: "pri_01kny10dkzn5nr7k59n96kajp3",
 };
 
 serve(async (req) => {
