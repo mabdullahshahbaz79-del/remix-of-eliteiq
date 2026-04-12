@@ -1,7 +1,13 @@
 import { motion } from "framer-motion";
+import SEOHead from "@/components/SEOHead";
 
 const RefundPolicyPage = () => (
   <div className="container mx-auto px-6 py-24">
+    <SEOHead
+      title="Refund Policy"
+      description="Read the eliteiq.tech refund policy. 7-day refund window, eligibility criteria, and how to request a refund for your license."
+      canonical="/refund-policy"
+    />
     <motion.div
       className="mx-auto max-w-3xl"
       initial={{ opacity: 0, y: 20 }}

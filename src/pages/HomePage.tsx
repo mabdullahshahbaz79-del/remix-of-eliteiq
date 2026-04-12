@@ -10,9 +10,15 @@ import TestimonialsSection from "@/components/home/TestimonialsSection";
 import FAQSection from "@/components/home/FAQSection";
 import CTABanner from "@/components/home/CTABanner";
 import ParallaxSection from "@/components/ParallaxSection";
+import SEOHead from "@/components/SEOHead";
 
 const HomePage = () => (
   <div>
+    <SEOHead
+      title="eliteiq.tech — AI Stock Metadata Generator for 9 Platforms"
+      description="Generate optimized metadata for Adobe Stock, Shutterstock, Freepik & 6 more platforms in seconds. AI-powered bulk processing, CSV export, confidence scoring."
+      canonical="/"
+    />
     <VIPHero />
     <ParallaxSection speed={0.12}>
       <ProblemSection />

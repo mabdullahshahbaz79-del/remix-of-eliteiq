@@ -1,7 +1,13 @@
 import { motion } from "framer-motion";
+import SEOHead from "@/components/SEOHead";
 
 const TermsPage = () => (
   <div className="container mx-auto px-6 py-24">
+    <SEOHead
+      title="Terms & Conditions"
+      description="Read the eliteiq.tech terms and conditions. License usage, intellectual property, prohibited use, and service availability terms."
+      canonical="/terms"
+    />
     <motion.div
       className="mx-auto max-w-3xl"
       initial={{ opacity: 0, y: 20 }}

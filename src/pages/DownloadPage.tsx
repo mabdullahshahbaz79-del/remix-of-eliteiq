@@ -1,5 +1,6 @@
 import { Download, Monitor, HardDrive, MemoryStick, Check, ExternalLink } from "lucide-react";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
+import SEOHead from "@/components/SEOHead";
 import {
   Accordion,
   AccordionContent,
@@ -36,6 +37,11 @@ const faqs = [
 
 const DownloadPage = () => (
   <div>
+    <SEOHead
+      title="Download Elite IQ — Free 30-Day Trial"
+      description="Download eliteiq.tech for Windows 10/11. AI-powered stock metadata generator with free 30-day trial. No credit card required."
+      canonical="/download"
+    />
     {/* Hero */}
     <section className="relative pt-32 pb-16">
       <div className="absolute inset-0 opacity-15" style={{ background: "radial-gradient(ellipse at 50% 0%, hsl(174 100% 40% / 0.3), transparent 60%)" }} />
