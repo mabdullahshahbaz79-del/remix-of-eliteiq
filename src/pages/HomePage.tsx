@@ -9,19 +9,38 @@ import PlatformsSection from "@/components/home/PlatformsSection";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import FAQSection from "@/components/home/FAQSection";
 import CTABanner from "@/components/home/CTABanner";
+import ParallaxSection from "@/components/ParallaxSection";
 
 const HomePage = () => (
   <div>
     <VIPHero />
-    <ProblemSection />
-    <SolutionSection />
-    <BeforeAfterSection />
-    <ResultsSection />
-    <FeaturesSection />
-    <HowItWorksSection />
-    <PlatformsSection />
-    <TestimonialsSection />
-    <FAQSection />
+    <ParallaxSection speed={0.12}>
+      <ProblemSection />
+    </ParallaxSection>
+    <ParallaxSection speed={0.08}>
+      <SolutionSection />
+    </ParallaxSection>
+    <ParallaxSection speed={0.15}>
+      <BeforeAfterSection />
+    </ParallaxSection>
+    <ParallaxSection speed={0.1}>
+      <ResultsSection />
+    </ParallaxSection>
+    <ParallaxSection speed={0.12}>
+      <FeaturesSection />
+    </ParallaxSection>
+    <ParallaxSection speed={0.08}>
+      <HowItWorksSection />
+    </ParallaxSection>
+    <ParallaxSection speed={0.15}>
+      <PlatformsSection />
+    </ParallaxSection>
+    <ParallaxSection speed={0.1}>
+      <TestimonialsSection />
+    </ParallaxSection>
+    <ParallaxSection speed={0.08}>
+      <FAQSection />
+    </ParallaxSection>
     <CTABanner />
   </div>
 );
