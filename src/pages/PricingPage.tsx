@@ -5,8 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import SEOHead from "@/components/SEOHead";
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
 
 const allFeatures = [
   "All 9 platforms support",
