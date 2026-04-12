@@ -8,6 +8,7 @@ import HowItWorksSection from "@/components/home/HowItWorksSection";
 import PlatformsSection from "@/components/home/PlatformsSection";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import FAQSection from "@/components/home/FAQSection";
+import CTABanner from "@/components/home/CTABanner";
 
 const HomePage = () => (
   <div>
@@ -21,6 +22,7 @@ const HomePage = () => (
     <PlatformsSection />
     <TestimonialsSection />
     <FAQSection />
+    <CTABanner />
   </div>
 );
 
