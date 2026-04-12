@@ -1,7 +1,13 @@
 import { motion } from "framer-motion";
+import SEOHead from "@/components/SEOHead";
 
 const PrivacyPolicyPage = () => (
   <div className="container mx-auto px-6 py-24">
+    <SEOHead
+      title="Privacy Policy"
+      description="Learn how eliteiq.tech collects, uses, and protects your personal information. Read our privacy practices for image processing and data security."
+      canonical="/privacy"
+    />
     <motion.div
       className="mx-auto max-w-3xl"
       initial={{ opacity: 0, y: 20 }}
