@@ -108,11 +108,15 @@ const Footer = () => {
           <div>
             <h4 className="mb-5 text-sm font-semibold uppercase tracking-wider text-foreground">Legal</h4>
             <div className="flex flex-col gap-3">
-              {["Privacy Policy", "Terms of Service", "Cookie Policy"].map((label) => (
-                <span key={label} className="group flex cursor-pointer items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground">
+              {[
+                { to: "/privacy", label: "Privacy Policy" },
+                { to: "/terms", label: "Terms & Conditions" },
+                { to: "/refund-policy", label: "Refund Policy" },
+              ].map((l) => (
+                <Link key={l.to} to={l.to} className="group flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground">
                   <ArrowRight className="h-3 w-3 opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0" />
-                  {label}
-                </span>
+                  {l.label}
+                </Link>
               ))}
             </div>
           </div>
