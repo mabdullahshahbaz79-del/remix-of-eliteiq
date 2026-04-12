@@ -1,5 +1,6 @@
 import { Key, Brain, Layers, Settings } from "lucide-react";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
+import SEOHead from "@/components/SEOHead";
 import {
   Accordion,
   AccordionContent,
@@ -50,6 +51,20 @@ const sections = [
 
 const FAQPage = () => (
   <div>
+    <SEOHead
+      title="FAQ — Frequently Asked Questions"
+      description="Find answers about licensing, AI metadata generation, supported platforms, file formats, and technical requirements for eliteiq.tech."
+      canonical="/faq"
+      jsonLd={{
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": sections.flatMap(s => s.items.map(item => ({
+          "@type": "Question",
+          "name": item.q,
+          "acceptedAnswer": { "@type": "Answer", "text": item.a },
+        }))),
+      }}
+    />
     {/* Hero */}
     <section className="relative pt-32 pb-16">
       <div className="absolute inset-0 opacity-15" style={{ background: "radial-gradient(ellipse at 50% 0%, hsl(255 60% 64% / 0.2), transparent 60%)" }} />

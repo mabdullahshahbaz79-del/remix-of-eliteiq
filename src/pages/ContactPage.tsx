@@ -2,6 +2,7 @@ import { useState } from "react";
 import { MessageCircle, Mail, HelpCircle, Send } from "lucide-react";
 import { toast } from "sonner";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
+import SEOHead from "@/components/SEOHead";
 
 const ContactPage = () => {
   const [form, setForm] = useState({ name: "", email: "", subject: "general", message: "" });
@@ -18,6 +19,11 @@ const ContactPage = () => {
 
   return (
     <div>
+      <SEOHead
+        title="Contact Us — Get Support"
+        description="Contact eliteiq.tech support via WhatsApp, email, or our contact form. Get help with licensing, technical issues, or billing."
+        canonical="/contact"
+      />
       {/* Hero */}
       <section className="relative pt-32 pb-16">
         <div className="absolute inset-0 opacity-15" style={{ background: "radial-gradient(ellipse at 50% 0%, hsl(174 100% 40% / 0.2), transparent 60%)" }} />

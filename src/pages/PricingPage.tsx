@@ -4,6 +4,9 @@ import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import SEOHead from "@/components/SEOHead";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 const allFeatures = [
   "All 9 platforms support",
@@ -62,6 +65,22 @@ const PricingPage = () => {
 
   return (
     <div>
+      <SEOHead
+        title="Pricing — Affordable Stock Metadata Plans"
+        description="Choose from Starter ($2.99/mo), Creator, Pro, or Studio plans. All plans include 9 platform support, bulk processing, and CSV export."
+        canonical="/pricing"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          "name": "eliteiq.tech Stock Metadata Generator",
+          "offers": [
+            { "@type": "Offer", "name": "Starter", "price": "2.99", "priceCurrency": "USD" },
+            { "@type": "Offer", "name": "Creator", "price": "7.49", "priceCurrency": "USD" },
+            { "@type": "Offer", "name": "Pro", "price": "14.99", "priceCurrency": "USD" },
+            { "@type": "Offer", "name": "Studio", "price": "29.99", "priceCurrency": "USD" },
+          ],
+        }}
+      />
       {/* Payment Status Banner */}
       {paymentStatus === "success" && (
         <div className="bg-success/10 border-b border-success/20">
