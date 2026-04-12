@@ -9,6 +9,9 @@ import PricingPage from "./pages/PricingPage";
 import DownloadPage from "./pages/DownloadPage";
 import FAQPage from "./pages/FAQPage";
 import ContactPage from "./pages/ContactPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import RefundPolicyPage from "./pages/RefundPolicyPage";
+import TermsPage from "./pages/TermsPage";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import NotFound from "./pages/NotFound";
@@ -29,6 +32,9 @@ const App = () => (
             <Route path="/download" element={<DownloadPage />} />
             <Route path="/faq" element={<FAQPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/privacy" element={<PrivacyPolicyPage />} />
+            <Route path="/refund-policy" element={<RefundPolicyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
           </Route>
           <Route path="/app" element={<AppDashboard />} />
           <Route path="/abdullah-admin" element={<AdminLogin />} />
