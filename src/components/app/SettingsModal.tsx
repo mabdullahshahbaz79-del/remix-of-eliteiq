@@ -5,8 +5,16 @@ import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { useAppContext } from './AppContext';
 import { useState } from 'react';
+import KeyboardShortcutsPanel from './KeyboardShortcutsPanel';
+import { ShortcutBinding } from '@/hooks/use-keyboard-shortcuts';
 
-const SettingsModal = () => {
+interface Props {
+  shortcuts: ShortcutBinding[];
+  onUpdateShortcut: (id: string, newKeys: string) => void;
+  onResetShortcuts: () => void;
+}
+
+const SettingsModal = ({ shortcuts, onUpdateShortcut, onResetShortcuts }: Props) => {
   const { settings, setSettings, showSettings, setShowSettings } = useAppContext();
   const [negKeyword, setNegKeyword] = useState('');
 
@@ -204,6 +212,13 @@ const SettingsModal = () => {
               ))}
             </div>
           </section>
+
+          {/* Keyboard Shortcuts Section */}
+          <KeyboardShortcutsPanel
+            shortcuts={shortcuts}
+            onUpdate={onUpdateShortcut}
+            onReset={onResetShortcuts}
+          />
         </div>
       </div>
     </div>
