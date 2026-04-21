@@ -119,6 +119,25 @@ const PricingPage = () => {
           <p className="mx-auto max-w-md text-center text-muted-foreground">
             Choose your plan — all plans unlock all 9 platforms with full features.
           </p>
+
+          {/* Coupon input */}
+          <div className="mx-auto mt-8 max-w-sm">
+            <label className="mb-2 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary">
+              <Tag className="h-3.5 w-3.5" /> Have a coupon?
+            </label>
+            <input
+              type="text"
+              value={coupon}
+              onChange={(e) => setCoupon(e.target.value)}
+              placeholder="Enter coupon code"
+              className="w-full rounded-full border border-glass-border bg-muted/20 px-5 py-3 text-center text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
+            {coupon.trim() && (
+              <p className="mt-2 text-center text-xs text-success">
+                ✓ Coupon "{coupon.trim()}" will be applied at checkout
+              </p>
+            )}
+          </div>
         </div>
       </section>
 
