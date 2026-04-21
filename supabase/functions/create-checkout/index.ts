@@ -72,13 +72,7 @@ serve(async (req) => {
           if (discountId) {
             transactionBody.discount_id = discountId;
           } else {
-            return new Response(
-              JSON.stringify({ error: "Invalid or inactive coupon code" }),
-              {
-                headers: { ...corsHeaders, "Content-Type": "application/json" },
-                status: 400,
-              },
-            );
+            console.warn(`Coupon "${code}" not found or inactive — proceeding without discount.`);
           }
         }
       } catch (e) {
