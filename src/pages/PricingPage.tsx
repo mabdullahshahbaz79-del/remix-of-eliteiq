@@ -1,5 +1,5 @@
 import { Link, useSearchParams } from "react-router-dom";
-import { Check, Star, Sparkles, Loader2, CheckCircle, XCircle } from "lucide-react";
+import { Check, Star, Sparkles, Loader2, CheckCircle, XCircle, Tag } from "lucide-react";
 import { ScrollReveal } from "@/hooks/use-scroll-animation";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
@@ -32,6 +32,7 @@ const PricingPage = () => {
   const [searchParams] = useSearchParams();
   const paymentStatus = searchParams.get("payment");
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [coupon, setCoupon] = useState("");
 
   useEffect(() => {
     if (paymentStatus === "success") {
@@ -45,7 +46,7 @@ const PricingPage = () => {
     setLoadingPlan(planName);
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { plan: planName },
+        body: { plan: planName, coupon: coupon.trim() || undefined },
       });
 
       if (error) throw error;
