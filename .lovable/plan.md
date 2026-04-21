@@ -1,93 +1,34 @@
 
 
-## Plan: Overhaul /app Dashboard — UI Polish, Upload UX, and End-to-End AI Metadata Generation
+## Plan: Restore Custom Success/Cancel Redirect URLs in Paddle Checkout
 
-### Overview
-Three major improvements to the /app dashboard: visual upgrade matching the website's premium aesthetic, enhanced drag-and-drop upload with progress indicators, and fully functional AI-powered metadata generation with batch processing.
+Now that `eliteiq.tech` is approved in your Paddle dashboard, we can re-enable the custom checkout redirect so users return to your pricing page with a success or cancellation status after payment.
 
----
+### What changes
 
-### 1. UI Polish and Animations
+**File:** `supabase/functions/create-checkout/index.ts`
 
-**AppDashboard.tsx** — Add animated background gradient overlay, smooth page transitions with framer-motion
-- Add subtle animated gradient orbs in the background (reuse existing `FloatingOrbs` or lighter variant)
-- Wrap content in framer-motion `AnimatePresence` for fade-in on load
+Add the `checkout.url` property back to the `transactionBody` sent to Paddle, but point it at your approved domain (`https://eliteiq.tech`) instead of the Lovable preview origin. This guarantees Paddle accepts the URL regardless of which environment (preview, published, custom domain) initiated the checkout.
 
-**AppNavbar.tsx** — Glassmorphism upgrade
-- Enhanced backdrop blur, subtle bottom glow line, smoother hover states on buttons
-- Add asset count stats (total, processing, done) as animated badges
+```ts
+const SUCCESS_REDIRECT = "https://eliteiq.tech/pricing?payment=success";
 
-**EmptyState.tsx** — Premium empty state
-- Animated floating icon with pulse glow effect
-- Drag-and-drop zone built directly into the empty state (not just a button)
-- Subtle particle/shimmer animation
+const transactionBody: Record<string, unknown> = {
+  items: [{ price_id: PLAN_PRICES[plan], quantity: 1 }],
+  custom_data: { plan },
+  checkout: { url: SUCCESS_REDIRECT },
+};
+```
 
-**AssetCard.tsx** — Card animations and polish
-- Staggered entrance animations using framer-motion
-- Smooth status transition animations (ready → processing spinner → done checkmark)
-- Hover lift effect with glow shadow
-- Progress bar during processing state
+The existing `origin`-based logic is removed since it caused the 400 error whenever the request came from an unapproved domain (e.g., the Lovable preview subdomain).
 
-**AssetGrid.tsx** — Layout improvements
-- Animated grid layout transitions when cards are added/removed
-- Better responsive breakpoints
-- Smooth search filter transitions
+### Result
 
-### 2. Enhanced Upload with Progress Indicators
+- After successful payment → user is redirected to `https://eliteiq.tech/pricing?payment=success` (triggers the existing green success banner + toast).
+- After cancellation → Paddle's default cancel behavior returns the user to the same URL; the existing `payment=cancelled` handler still works if Paddle appends it.
+- No more `transaction_checkout_url_domain_is_not_approved` 400 errors.
 
-**UploadZone.tsx** — Complete rewrite
-- Real drag-and-drop with visual feedback (border glow, icon animation, file count preview)
-- File validation with size/type checking and error feedback
-- Individual file progress bars showing processing state
-- Thumbnail preview generation before adding to grid
-- File queue display showing pending uploads
-- Support paste from clipboard (Ctrl+V)
+### Optional follow-up (not included unless you ask)
 
-**AppContext.tsx** — Add upload queue state
-- `uploadQueue` state for tracking files being processed
-- `uploadProgress` map for per-file progress
-- Batch upload handler that processes files with visual feedback
-
-### 3. End-to-End AI Metadata Generation
-
-The edge function `generate-metadata` already exists and works. The improvements:
-
-**AssetCard.tsx** — Fix the generate flow
-- The current flow converts blob URL to base64 correctly but wraps it in a nested callback; flatten to async/await
-- Add a progress indicator (pulsing bar) during generation
-- Show confidence score visually after generation
-- Handle 429/402 errors with user-friendly toasts
-
-**AssetGrid.tsx** — Batch processing improvements
-- Sequential batch processing with progress counter ("Processing 3/12...")
-- Configurable parallel workers from settings (use `settings.advanced.parallelWorkers`)
-- Auto-retry on failure if `settings.advanced.autoRetry` is enabled
-- Overall batch progress bar in the navbar area
-
-**AssetSidePanel.tsx** — Enhanced metadata display
-- Platform-specific tabs showing per-platform metadata (the edge function already returns this)
-- Copy buttons for each platform's title/description/keywords
-- Platform readiness indicators (green checkmark per platform)
-- Regenerate button that actually calls the edge function
-
----
-
-### Technical Details
-
-**Files to create:**
-- None (all changes are to existing files)
-
-**Files to modify:**
-- `src/pages/AppDashboard.tsx` — Background effects, layout animation wrapper
-- `src/components/app/AppNavbar.tsx` — Glassmorphism, batch progress indicator, stats badges
-- `src/components/app/EmptyState.tsx` — Animated empty state with inline drop zone
-- `src/components/app/UploadZone.tsx` — Progress bars, file validation, clipboard paste
-- `src/components/app/AssetCard.tsx` — Entrance animations, progress bar, smoother generate flow
-- `src/components/app/AssetGrid.tsx` — Batch processing with parallel workers, progress tracking
-- `src/components/app/AssetSidePanel.tsx` — Platform tabs, working regenerate/copy actions
-- `src/components/app/AppContext.tsx` — Upload queue state, batch progress tracking
-
-**Dependencies:** framer-motion (already installed)
-
-**No database changes needed** — everything is client-side with the existing edge function.
+If you want preview/test checkouts to redirect back to the Lovable preview instead of production, you'd need to also add `id-preview--dc2c398a-5c9e-419e-b454-f4b8cd66114f.lovable.app` to Paddle's approved domains. For now, all checkouts will land on `eliteiq.tech`.
 
