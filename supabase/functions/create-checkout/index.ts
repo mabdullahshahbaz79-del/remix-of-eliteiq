@@ -43,9 +43,6 @@ serve(async (req) => {
           quantity: 1,
         },
       ],
-      checkout: {
-        url: `${origin}/pricing?payment=success`,
-      },
       custom_data: {
         plan: plan,
       },
