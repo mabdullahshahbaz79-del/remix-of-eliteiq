@@ -20,7 +20,7 @@ serve(async (req) => {
   }
 
   try {
-    const { plan, email } = await req.json();
+    const { plan, email, coupon } = await req.json();
 
     if (!plan || !PLAN_PRICES[plan]) {
       return new Response(JSON.stringify({ error: "Invalid plan" }), {
@@ -53,6 +53,37 @@ serve(async (req) => {
 
     if (email) {
       transactionBody.customer = { email };
+    }
+
+    // Apply coupon/discount if provided
+    // Special case: "abdullah" coupon = 100% free (looked up in Paddle by code)
+    if (coupon && typeof coupon === "string" && coupon.trim()) {
+      const code = coupon.trim().toLowerCase();
+      try {
+        const discountRes = await fetch(
+          `https://api.paddle.com/discounts?code=${encodeURIComponent(code)}&status=active`,
+          {
+            headers: { "Authorization": `Bearer ${apiKey}` },
+          },
+        );
+        if (discountRes.ok) {
+          const discountJson = await discountRes.json();
+          const discountId = discountJson.data?.[0]?.id;
+          if (discountId) {
+            transactionBody.discount_id = discountId;
+          } else {
+            return new Response(
+              JSON.stringify({ error: "Invalid or inactive coupon code" }),
+              {
+                headers: { ...corsHeaders, "Content-Type": "application/json" },
+                status: 400,
+              },
+            );
+          }
+        }
+      } catch (e) {
+        console.error("Discount lookup failed:", e);
+      }
     }
 
     const response = await fetch("https://api.paddle.com/transactions", {
