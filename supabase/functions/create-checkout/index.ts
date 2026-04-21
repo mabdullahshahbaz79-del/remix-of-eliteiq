@@ -34,7 +34,7 @@ serve(async (req) => {
       throw new Error("Paddle API key not configured");
     }
 
-    const origin = req.headers.get("origin") || "https://adobescribe-pro.lovable.app";
+    const SUCCESS_REDIRECT = "https://eliteiq.tech/pricing?payment=success";
 
     const transactionBody: Record<string, unknown> = {
       items: [
@@ -45,6 +45,9 @@ serve(async (req) => {
       ],
       custom_data: {
         plan: plan,
+      },
+      checkout: {
+        url: SUCCESS_REDIRECT,
       },
     };
 
