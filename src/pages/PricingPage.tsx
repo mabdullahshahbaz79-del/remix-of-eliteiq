@@ -51,6 +51,11 @@ const PricingPage = () => {
 
       if (error) throw error;
       if (data?.url) {
+        if (data.coupon_warning) {
+          toast.warning(data.coupon_warning);
+        } else if (coupon.trim()) {
+          toast.success(`Coupon "${coupon.trim()}" applied successfully!`);
+        }
         window.open(data.url, "_blank");
       } else {
         throw new Error("No checkout URL received");

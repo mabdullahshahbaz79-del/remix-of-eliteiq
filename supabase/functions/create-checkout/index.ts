@@ -57,6 +57,7 @@ serve(async (req) => {
 
     // Apply coupon/discount if provided
     // Special case: "abdullah" coupon = 100% free (looked up in Paddle by code)
+    let couponWarning: string | null = null;
     if (coupon && typeof coupon === "string" && coupon.trim()) {
       const code = coupon.trim().toLowerCase();
       try {
@@ -72,10 +73,15 @@ serve(async (req) => {
           if (discountId) {
             transactionBody.discount_id = discountId;
           } else {
-            console.warn(`Coupon "${code}" not found or inactive — proceeding without discount.`);
+            couponWarning = `Coupon "${coupon.trim()}" is invalid or inactive. Proceeding without a discount.`;
+            console.warn(couponWarning);
           }
+        } else {
+          couponWarning = `Could not validate coupon "${coupon.trim()}". Proceeding without a discount.`;
+          console.error("Paddle discount lookup failed:", discountRes.status);
         }
       } catch (e) {
+        couponWarning = `Could not validate coupon "${coupon.trim()}". Proceeding without a discount.`;
         console.error("Discount lookup failed:", e);
       }
     }
@@ -102,7 +108,7 @@ serve(async (req) => {
       throw new Error("No checkout URL received from Paddle");
     }
 
-    return new Response(JSON.stringify({ url: checkoutUrl }), {
+    return new Response(JSON.stringify({ url: checkoutUrl, coupon_warning: couponWarning }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
