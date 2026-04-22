@@ -49,7 +49,11 @@ const PricingPage = () => {
       });
 
       if (error) throw error;
-      if (data?.url) {
+      const txnId = data?.transaction_id;
+      if (txnId) {
+        // Open Paddle's hosted checkout with the transaction token
+        window.location.href = `https://checkout.paddle.com/checkout/custom/${txnId}`;
+      } else if (data?.url) {
         window.location.href = data.url;
       } else {
         throw new Error("No checkout URL received");
