@@ -6,6 +6,14 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import SEOHead from "@/components/SEOHead";
 
+declare global {
+  interface Window {
+    Paddle?: any;
+  }
+}
+
+const PADDLE_CLIENT_TOKEN = "live_7c8e3a8f9b2d4e5f6a1b2c3d4e"; // placeholder - replace with real client-side token
+
 const allFeatures = [
   "All 9 platforms support",
   "Unlimited files",
@@ -41,6 +49,38 @@ const PricingPage = () => {
     }
   }, [paymentStatus]);
 
+  useEffect(() => {
+    // Initialize Paddle.js once available
+    const init = () => {
+      if (window.Paddle && !window.Paddle._initialized) {
+        try {
+          window.Paddle.Environment.set("production");
+          window.Paddle.Initialize({
+            token: PADDLE_CLIENT_TOKEN,
+            eventCallback: (event: any) => {
+              if (event?.name === "checkout.completed") {
+                window.location.href = "/pricing?payment=success";
+              }
+            },
+          });
+          window.Paddle._initialized = true;
+        } catch (e) {
+          console.error("Paddle init failed:", e);
+        }
+      }
+    };
+    if (window.Paddle) init();
+    else {
+      const t = setInterval(() => {
+        if (window.Paddle) {
+          init();
+          clearInterval(t);
+        }
+      }, 200);
+      return () => clearInterval(t);
+    }
+  }, []);
+
   const handleCheckout = async (planName: string) => {
     setLoadingPlan(planName);
     try {
@@ -49,10 +89,16 @@ const PricingPage = () => {
       });
 
       if (error) throw error;
-      if (data?.url) {
+
+      // Prefer opening Paddle overlay with transaction_id (current Paddle flow)
+      if (data?.transaction_id && window.Paddle?.Checkout?.open) {
+        window.Paddle.Checkout.open({
+          transactionId: data.transaction_id,
+        });
+      } else if (data?.url) {
         window.location.href = data.url;
       } else {
-        throw new Error("No checkout URL received");
+        throw new Error("No checkout received from server");
       }
     } catch (err: any) {
       toast.error(err.message || "Checkout failed. Please try again.");
