@@ -103,12 +103,13 @@ serve(async (req) => {
 
     const result = await response.json();
     const checkoutUrl = result.data?.checkout?.url;
+    const transactionId = result.data?.id;
 
-    if (!checkoutUrl) {
+    if (!checkoutUrl && !transactionId) {
       throw new Error("No checkout URL received from Paddle");
     }
 
-    return new Response(JSON.stringify({ url: checkoutUrl, coupon_warning: couponWarning }), {
+    return new Response(JSON.stringify({ url: checkoutUrl, transaction_id: transactionId, coupon_warning: couponWarning }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
