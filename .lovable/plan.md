@@ -1,34 +1,48 @@
 
 
-## Plan: Restore Custom Success/Cancel Redirect URLs in Paddle Checkout
+## How to Set the Default Payment Success URL in Paddle
 
-Now that `eliteiq.tech` is approved in your Paddle dashboard, we can re-enable the custom checkout redirect so users return to your pricing page with a success or cancellation status after payment.
+This is a configuration step inside your **Paddle Dashboard** — no code changes needed. Once set, every successful checkout will redirect customers back to your pricing page with the success banner shown.
 
-### What changes
+### Steps
 
-**File:** `supabase/functions/create-checkout/index.ts`
+1. **Log in to Paddle Dashboard** → https://vendors.paddle.com
+2. In the left sidebar, click **Checkout** → **Checkout settings**
+   *(On newer Paddle UI: **Developer Tools** → **Checkout settings**)*
+3. Scroll to the **Default payment link** (or **Default success URL**) field
+4. Paste this exact URL:
+   ```
+   https://eliteiq.tech/pricing?payment=success
+   ```
+5. Click **Save**
 
-Add the `checkout.url` property back to the `transactionBody` sent to Paddle, but point it at your approved domain (`https://eliteiq.tech`) instead of the Lovable preview origin. This guarantees Paddle accepts the URL regardless of which environment (preview, published, custom domain) initiated the checkout.
+### What happens after
 
-```ts
-const SUCCESS_REDIRECT = "https://eliteiq.tech/pricing?payment=success";
+- Customer clicks "Get Pro" → Paddle's hosted checkout opens
+- Customer completes payment → Paddle redirects to `https://eliteiq.tech/pricing?payment=success`
+- Your existing green success banner + toast notification appear automatically (already coded in `PricingPage.tsx`)
+- The webhook (`paddle-webhook` Edge Function) generates the license key and stores the transaction in the background
 
-const transactionBody: Record<string, unknown> = {
-  items: [{ price_id: PLAN_PRICES[plan], quantity: 1 }],
-  custom_data: { plan },
-  checkout: { url: SUCCESS_REDIRECT },
-};
-```
+### Approved domain reminder
 
-The existing `origin`-based logic is removed since it caused the 400 error whenever the request came from an unapproved domain (e.g., the Lovable preview subdomain).
+Make sure `eliteiq.tech` is also listed under **Checkout** → **Approved domains** in Paddle (you confirmed it already is). The success URL must use a domain from that approved list, otherwise Paddle rejects it.
 
-### Result
+### If you can't find the setting
 
-- After successful payment → user is redirected to `https://eliteiq.tech/pricing?payment=success` (triggers the existing green success banner + toast).
-- After cancellation → Paddle's default cancel behavior returns the user to the same URL; the existing `payment=cancelled` handler still works if Paddle appends it.
-- No more `transaction_checkout_url_domain_is_not_approved` 400 errors.
+Paddle occasionally renames menu items. Look for any of these labels:
+- "Default payment link"
+- "Default success URL"
+- "Checkout completion URL"
+- "Post-checkout redirect"
 
-### Optional follow-up (not included unless you ask)
+All refer to the same field. If still missing, it may be under **Developer Tools** → **Checkout settings** instead of **Checkout** → **Checkout settings**.
 
-If you want preview/test checkouts to redirect back to the Lovable preview instead of production, you'd need to also add `id-preview--dc2c398a-5c9e-419e-b454-f4b8cd66114f.lovable.app` to Paddle's approved domains. For now, all checkouts will land on `eliteiq.tech`.
+### No code changes required
+
+Your code is already correct:
+- `create-checkout` Edge Function lets Paddle return its hosted checkout URL
+- `PricingPage.tsx` redirects users there
+- The success banner reads `?payment=success` from the URL when they return
+
+Once you save the URL in Paddle, the full flow will work end-to-end.
 
