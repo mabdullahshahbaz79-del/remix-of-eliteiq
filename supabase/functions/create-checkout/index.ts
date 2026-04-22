@@ -34,8 +34,6 @@ serve(async (req) => {
       throw new Error("Paddle API key not configured");
     }
 
-    const SUCCESS_REDIRECT = "https://eliteiq.tech/pricing?payment=success";
-
     const transactionBody: Record<string, unknown> = {
       items: [
         {
@@ -45,9 +43,6 @@ serve(async (req) => {
       ],
       custom_data: {
         plan: plan,
-      },
-      checkout: {
-        url: SUCCESS_REDIRECT,
       },
     };
 
@@ -103,12 +98,13 @@ serve(async (req) => {
 
     const result = await response.json();
     const checkoutUrl = result.data?.checkout?.url;
+    const transactionId = result.data?.id;
 
-    if (!checkoutUrl) {
+    if (!checkoutUrl && !transactionId) {
       throw new Error("No checkout URL received from Paddle");
     }
 
-    return new Response(JSON.stringify({ url: checkoutUrl, coupon_warning: couponWarning }), {
+    return new Response(JSON.stringify({ url: checkoutUrl, transaction_id: transactionId, coupon_warning: couponWarning }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
