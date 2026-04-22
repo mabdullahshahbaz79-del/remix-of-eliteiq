@@ -51,8 +51,9 @@ const PricingPage = () => {
       if (error) throw error;
       const txnId = data?.transaction_id;
       if (txnId) {
-        // Open Paddle's hosted checkout with the transaction token
-        window.location.href = `https://checkout.paddle.com/checkout/custom/${txnId}`;
+        // Redirect to the approved domain with the Paddle transaction token.
+        // Paddle.js (loaded on the page) will detect _ptxn and open the checkout overlay.
+        window.location.href = `https://eliteiq.tech/pricing?_ptxn=${txnId}`;
       } else if (data?.url) {
         window.location.href = data.url;
       } else {
