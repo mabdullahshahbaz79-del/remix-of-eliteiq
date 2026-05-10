@@ -1,48 +1,46 @@
 
 
-## How to Set the Default Payment Success URL in Paddle
+## Final Step: Add Your Paddle Client-Side Token
 
-This is a configuration step inside your **Paddle Dashboard** — no code changes needed. Once set, every successful checkout will redirect customers back to your pricing page with the success banner shown.
+The Paddle.js overlay checkout is fully integrated, but it needs your **client-side token** to initialize. Right now `src/pages/PricingPage.tsx` has a placeholder:
 
-### Steps
+```ts
+const PADDLE_CLIENT_TOKEN = "live_7c8e3a8f9b2d4e5f6a1b2c3d4e"; // placeholder
+```
 
-1. **Log in to Paddle Dashboard** → https://vendors.paddle.com
-2. In the left sidebar, click **Checkout** → **Checkout settings**
-   *(On newer Paddle UI: **Developer Tools** → **Checkout settings**)*
-3. Scroll to the **Default payment link** (or **Default success URL**) field
-4. Paste this exact URL:
-   ```
-   https://eliteiq.tech/pricing?payment=success
-   ```
-5. Click **Save**
+Until this is replaced with your real token, clicking "Get Pro" (or any plan) will fail silently or fall back to the broken redirect URL.
 
-### What happens after
+### What you need to do
 
-- Customer clicks "Get Pro" → Paddle's hosted checkout opens
-- Customer completes payment → Paddle redirects to `https://eliteiq.tech/pricing?payment=success`
-- Your existing green success banner + toast notification appear automatically (already coded in `PricingPage.tsx`)
-- The webhook (`paddle-webhook` Edge Function) generates the license key and stores the transaction in the background
+**1. Get your client-side token from Paddle**
 
-### Approved domain reminder
+- Log in to https://vendors.paddle.com
+- Go to **Developer Tools → Authentication** (left sidebar)
+- Find the **Client-side tokens** section (separate from API keys)
+- Click **Generate client-side token** if you don't have one yet
+- Copy the token — it starts with `live_...` (e.g. `live_abc123def456...`)
 
-Make sure `eliteiq.tech` is also listed under **Checkout** → **Approved domains** in Paddle (you confirmed it already is). The success URL must use a domain from that approved list, otherwise Paddle rejects it.
+> ⚠️ This is **different** from your API key (`pdl_live_apikey_...`). The API key is server-side only. The client-side token is safe to put in frontend code.
 
-### If you can't find the setting
+**2. Send the token to me in chat**
 
-Paddle occasionally renames menu items. Look for any of these labels:
-- "Default payment link"
-- "Default success URL"
-- "Checkout completion URL"
-- "Post-checkout redirect"
+Just paste it in your next message, e.g.:
+> "Here's my token: live_xxxxxxxxxxxxx"
 
-All refer to the same field. If still missing, it may be under **Developer Tools** → **Checkout settings** instead of **Checkout** → **Checkout settings**.
+### What I'll do once you send it
 
-### No code changes required
+- Replace the placeholder `PADDLE_CLIENT_TOKEN` in `src/pages/PricingPage.tsx` with your real token
+- That's it — the file is the only change needed
 
-Your code is already correct:
-- `create-checkout` Edge Function lets Paddle return its hosted checkout URL
-- `PricingPage.tsx` redirects users there
-- The success banner reads `?payment=success` from the URL when they return
+### What will happen after
 
-Once you save the URL in Paddle, the full flow will work end-to-end.
+1. User clicks "Get Pro" on the pricing page
+2. `create-checkout` Edge Function creates a Paddle transaction and returns its ID
+3. Paddle.js opens the **overlay checkout modal** on top of your pricing page (no redirect to a broken URL)
+4. User pays → Paddle fires `checkout.completed` → page redirects to `/pricing?payment=success`
+5. The `paddle-webhook` function generates the license key in the background
+
+### Verifying afterwards
+
+After I update the token, click any "Get [Plan]" button. You should see the Paddle overlay appear immediately — no more redirect to `eliteiq.tech/pricing?_ptxn=...`.
 
